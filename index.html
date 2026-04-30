@@ -1,0 +1,310 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>WEG Gear Systems — KPI Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; padding: 0;
+    background: #F4F6F8;
+    font-family: 'Open Sans', sans-serif;
+    color: #2C3E50;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .container {
+    padding: 32px 36px 48px;
+    max-width: 1300px;
+    margin: 0 auto;
+  }
+
+  h1 {
+    font-size: 26px;
+    font-weight: 700;
+    color: #00579E;
+    margin: 0 0 6px;
+  }
+
+  .subtitle {
+    color: #5A6878;
+    font-size: 14px;
+    margin-bottom: 28px;
+  }
+
+  .kpi-strip {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 14px;
+    margin-bottom: 32px;
+  }
+
+  .kpi-mini {
+    background: #FFFFFF;
+    border: 1px solid #E1E6EB;
+    border-radius: 6px;
+    padding: 16px 20px;
+    box-shadow: 0 1px 2px rgba(44, 62, 80, 0.06);
+  }
+
+  .kpi-mini .label {
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    color: #8A98A8;
+    margin-bottom: 8px;
+  }
+
+  .kpi-mini .value {
+    font-size: 22px;
+    font-weight: 700;
+    color: #2C3E50;
+    line-height: 1.1;
+  }
+
+  .kpi-mini .currency {
+    font-size: 11px;
+    color: #8A98A8;
+    margin-right: 4px;
+    font-weight: 600;
+  }
+
+  .kpi-mini .pct {
+    font-size: 13px;
+    color: #5A6878;
+    margin-left: 6px;
+    font-weight: 600;
+  }
+
+  .section-title {
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.7px;
+    color: #5A6878;
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .section-title::before {
+    content: '';
+    width: 4px;
+    height: 16px;
+    background: #00579E;
+    border-radius: 2px;
+  }
+
+  .tiles {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 18px;
+  }
+
+  .tile {
+    background: #FFFFFF;
+    border: 1px solid #E1E6EB;
+    border-radius: 8px;
+    padding: 24px;
+    text-decoration: none;
+    color: inherit;
+    box-shadow: 0 1px 2px rgba(44, 62, 80, 0.06);
+    transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+    display: flex;
+    align-items: flex-start;
+    gap: 18px;
+  }
+
+  .tile:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(44, 62, 80, 0.10);
+    border-color: #E5EFF7;
+  }
+
+  .tile-icon {
+    width: 56px;
+    height: 56px;
+    border-radius: 10px;
+    background: #E5EFF7;
+    color: #00579E;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 28px;
+    flex-shrink: 0;
+  }
+
+  .tile h3 {
+    margin: 0 0 6px;
+    font-size: 17px;
+    font-weight: 700;
+    color: #00579E;
+  }
+
+  .tile p {
+    margin: 0;
+    color: #5A6878;
+    font-size: 13px;
+    line-height: 1.5;
+  }
+
+  .tile-meta {
+    margin-top: 10px;
+    font-size: 11px;
+    color: #8A98A8;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    font-weight: 600;
+  }
+
+  .footer-meta {
+    margin-top: 32px;
+    padding-top: 16px;
+    border-top: 1px solid #E1E6EB;
+    font-size: 11px;
+    color: #8A98A8;
+    letter-spacing: 0.4px;
+    text-transform: uppercase;
+  }
+</style>
+</head>
+<body>
+
+
+<style>
+  .app-navbar {
+    background: #FFFFFF;
+    border-bottom: 1px solid #E1E6EB;
+    box-shadow: 0 1px 2px rgba(44, 62, 80, 0.06);
+    padding: 0 24px;
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    height: 64px;
+    font-family: 'Open Sans', sans-serif;
+  }
+  .app-navbar .weg-logo { height: 38px; flex-shrink: 0; }
+  .app-navbar .brand-name {
+    color: #00579E; font-weight: 700; font-size: 18px; letter-spacing: -0.2px;
+    margin-right: 24px;
+  }
+  .app-navbar .navbar-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 0 14px;
+    height: 40px;
+    color: #5A6878;
+    font-weight: 600;
+    font-size: 13px;
+    text-decoration: none;
+    border-radius: 6px;
+    transition: all 0.12s ease;
+  }
+  .app-navbar .navbar-link:hover {
+    color: #00579E;
+    background: #E5EFF7;
+  }
+  .app-navbar .navbar-link.active {
+    color: #00579E;
+    background: #E5EFF7;
+  }
+  .app-navbar .navbar-icon { font-size: 14px; }
+  .app-navbar .navbar-meta {
+    margin-left: auto;
+    display: flex;
+    gap: 16px;
+    align-items: center;
+    font-size: 12px;
+    color: #5A6878;
+  }
+  .app-navbar .navbar-pill {
+    background: #E5EFF7;
+    color: #00579E;
+    padding: 4px 10px;
+    border-radius: 4px;
+    font-weight: 600;
+  }
+</style>
+<nav class="app-navbar">
+  <img class="weg-logo" alt="WEG" src="data:image/png;base64,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">
+  <span class="brand-name">WEG Gear Systems</span>
+  <a href="index.html" class="navbar-link active"><span class="navbar-icon">⌂</span> Overview</a> <a href="kpi_dashboard.html" class="navbar-link"><span class="navbar-icon">▦</span> Stock Dashboard</a> <a href="stock_history.html" class="navbar-link"><span class="navbar-icon">📈</span> Stock History and Projection</a> <a href="material_planning.html" class="navbar-link"><span class="navbar-icon">📋</span> Material Planning</a>
+  <div class="navbar-meta">
+    <span>Reference: <span class="navbar-pill">30/04/2026</span></span>
+    <span>Updated: 30/04/2026 14:59</span>
+  </div>
+</nav>
+
+
+<div class="container">
+  <h1>Welcome</h1>
+  <p class="subtitle">
+    Stock indicators and forecast for the production areas
+    — Turned Parts, Geared Parts, and Cast Machining.
+  </p>
+
+  <div class="kpi-strip">
+    <div class="kpi-mini">
+      <div class="label">Total stock value</div>
+      <div class="value"><span class="currency">EUR</span>16.650.635,22</div>
+    </div>
+    <div class="kpi-mini">
+      <div class="label">No movement &gt; 180d</div>
+      <div class="value"><span class="currency">EUR</span>1.671.770,69<span class="pct">10,0%</span></div>
+    </div>
+    <div class="kpi-mini">
+      <div class="label">Provision loss now</div>
+      <div class="value"><span class="currency">EUR</span>498.035,38<span class="pct">3,0%</span></div>
+    </div>
+    <div class="kpi-mini">
+      <div class="label">Materials in scope</div>
+      <div class="value">7.285</div>
+    </div>
+  </div>
+
+  <div class="section-title">Reports</div>
+
+  <div class="tiles">
+    <a href="kpi_dashboard.html" class="tile">
+      <div class="tile-icon">▦</div>
+      <div>
+        <h3>Stock Dashboard</h3>
+        <p>Five key indicators in EUR — total value, slow-moving inventory,
+           and provision loss now and at end of month, with 12-month history.</p>
+        <div class="tile-meta">5 KPIs · 2 charts · monthly</div>
+      </div>
+    </a>
+    <a href="stock_history.html" class="tile">
+      <div class="tile-icon">📈</div>
+      <div>
+        <h3>Stock History &amp; Prediction</h3>
+        <p>Per area: stock, reorder point, safety stock, SMI quantity,
+           and worst-case projection — with multi-select family filter.</p>
+        <div class="tile-meta">5 series · per family · forecast</div>
+      </div>
+    </a>
+    <a href="material_planning.html" class="tile">
+      <div class="tile-icon">📋</div>
+      <div>
+        <h3>Material Planning</h3>
+        <p>Per-material status, ROP review (SAP vs suggested), and
+           suggested actions — search, filter, drill-down.</p>
+        <div class="tile-meta">per material · status · action</div>
+      </div>
+    </a>
+  </div>
+
+  <div class="footer-meta">
+    EP0 · PPC · WC-AUFTR · Internal use only
+  </div>
+</div>
+
+</body>
+</html>
