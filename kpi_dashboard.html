@@ -1,0 +1,603 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Stock Indicators</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --weg-blue:    #00579E;
+    --weg-blue-dk: #003E73;
+    --weg-blue-lt: #E5EFF7;
+
+    --bg:          #F4F6F8;
+    --panel:       #FFFFFF;
+    --ink:         #2C3E50;
+    --ink-soft:    #5A6878;
+    --muted:       #8A98A8;
+    --rule:        #E1E6EB;
+    --rule-soft:   #EEF1F4;
+
+    --ok:          #27AE60;
+    --warn:        #F39C12;
+    --crit:        #E74C3C;
+
+    --shadow-sm:   0 1px 2px rgba(44, 62, 80, 0.06);
+  }
+
+  * { box-sizing: border-box; }
+
+  html, body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: 'Open Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-size: 14px;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ─── Top bar ──────────────────────────────────────────────── */
+  .topbar {
+    background: var(--panel);
+    border-bottom: 1px solid var(--rule);
+    box-shadow: var(--shadow-sm);
+    padding: 16px 28px;
+    display: flex;
+    align-items: center;
+    gap: 22px;
+  }
+  .topbar-logo {
+    height: 48px;
+    width: auto;
+    flex-shrink: 0;
+    display: block;
+  }
+  .topbar-brand {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.1;
+    gap: 4px;
+  }
+  .brand-name {
+    color: var(--weg-blue);
+    font-weight: 700;
+    font-size: 22px;
+    letter-spacing: -0.2px;
+  }
+  .brand-section {
+    color: var(--ink-soft);
+    font-weight: 600;
+    font-size: 13px;
+    letter-spacing: 0.4px;
+    text-transform: uppercase;
+  }
+  .topbar-meta {
+    margin-left: auto;
+    display: flex;
+    gap: 18px;
+    align-items: center;
+    font-size: 12px;
+    color: var(--ink-soft);
+  }
+  .topbar-meta .pill {
+    background: var(--weg-blue-lt);
+    color: var(--weg-blue);
+    padding: 4px 12px;
+    border-radius: 4px;
+    font-weight: 600;
+  }
+  .version { color: var(--muted); font-size: 11px; }
+
+  /* ─── Page ─────────────────────────────────────────────────── */
+  .page {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 24px 28px 48px;
+  }
+
+  /* ─── Section header ───────────────────────────────────────── */
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 8px 0 14px;
+    color: var(--weg-blue);
+    font-weight: 700;
+    font-size: 13px;
+    letter-spacing: 0.6px;
+    text-transform: uppercase;
+  }
+  .section-header::before {
+    content: '';
+    width: 4px;
+    height: 16px;
+    background: var(--weg-blue);
+    border-radius: 2px;
+  }
+
+  /* ─── KPI cards row ────────────────────────────────────────── */
+  .kpi-row {
+    display: grid;
+    grid-template-columns: 1.2fr repeat(4, 1fr);
+    gap: 14px;
+    margin-bottom: 32px;
+  }
+  @media (max-width: 1180px) {
+    .kpi-row { grid-template-columns: 1fr 1fr 1fr; }
+  }
+  @media (max-width: 760px) {
+    .kpi-row { grid-template-columns: 1fr; }
+  }
+
+  .kpi-card {
+    background: var(--panel);
+    border: 1px solid var(--rule);
+    border-radius: 6px;
+    padding: 16px 18px;
+    box-shadow: var(--shadow-sm);
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    min-height: 175px;
+  }
+  .kpi-card.headline {
+    background: linear-gradient(135deg, var(--weg-blue) 0%, var(--weg-blue-dk) 100%);
+    color: #fff;
+    border: none;
+  }
+
+  .kpi-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .kpi-label {
+    font-size: 10.5px;
+    text-transform: uppercase;
+    letter-spacing: 0.7px;
+    font-weight: 700;
+    color: var(--ink-soft);
+    line-height: 1.35;
+  }
+  .kpi-card.headline .kpi-label {
+    color: rgba(255,255,255,0.85);
+  }
+
+  .kpi-badge {
+    font-size: 9.5px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.7px;
+    padding: 3px 7px;
+    border-radius: 3px;
+    white-space: nowrap;
+  }
+  .kpi-badge.ok   { background: #E8F8EF; color: var(--ok); }
+  .kpi-badge.warn { background: #FEF4E1; color: var(--warn); }
+  .kpi-badge.crit { background: #FCEAE7; color: var(--crit); }
+
+  .kpi-value {
+    font-size: 22px;
+    font-weight: 700;
+    line-height: 1.05;
+    letter-spacing: -0.4px;
+    color: var(--weg-blue);
+  }
+  .kpi-card.headline .kpi-value {
+    color: #fff;
+    font-size: 26px;
+  }
+  .kpi-value .currency {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--muted);
+    margin-right: 5px;
+    vertical-align: 0.25em;
+  }
+  .kpi-card.headline .kpi-value .currency {
+    color: rgba(255,255,255,0.7);
+  }
+
+  .kpi-pct {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--ink);
+    margin-left: 6px;
+  }
+
+  /* Progress bar */
+  .progress {
+    height: 5px;
+    background: var(--rule-soft);
+    border-radius: 3px;
+    overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%;
+    border-radius: 3px;
+  }
+  .progress-fill.ok   { background: var(--ok); }
+  .progress-fill.warn { background: var(--warn); }
+  .progress-fill.crit { background: var(--crit); }
+
+  .kpi-foot {
+    margin-top: auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 11.5px;
+    color: var(--ink-soft);
+    padding-top: 8px;
+    border-top: 1px solid var(--rule-soft);
+  }
+  .kpi-card.headline .kpi-foot {
+    color: rgba(255,255,255,0.85);
+    border-top-color: rgba(255,255,255,0.2);
+  }
+
+  /* ─── Charts ───────────────────────────────────────────────── */
+  .chart-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 32px;
+  }
+  @media (max-width: 980px) {
+    .chart-row { grid-template-columns: 1fr; }
+  }
+  .chart-card {
+    background: var(--panel);
+    border: 1px solid var(--rule);
+    border-radius: 6px;
+    box-shadow: var(--shadow-sm);
+    overflow: hidden;
+  }
+  .chart-head {
+    padding: 12px 18px;
+    border-bottom: 1px solid var(--rule);
+    background: #FAFBFC;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .chart-title {
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    color: var(--ink-soft);
+  }
+  .chart-sub {
+    font-size: 11px;
+    color: var(--muted);
+  }
+  .chart-body { padding: 8px 12px 12px; }
+  .chart-body svg { width: 100%; height: auto; display: block; }
+
+  .chart-empty {
+    padding: 40px 20px;
+    text-align: center;
+    color: var(--muted);
+    font-style: italic;
+    font-size: 13px;
+  }
+
+  .chart-body .grid    { stroke: var(--rule-soft); stroke-width: 1; }
+  .chart-body .axis    { font-family: 'Open Sans', sans-serif; font-size: 11px; font-weight: 600; fill: var(--ink); }
+  .chart-body .axis.y  { text-anchor: end; }
+  .chart-body .value   { font-family: 'Open Sans', sans-serif; font-size: 11px; font-weight: 700; }
+
+  /* ─── Definitions panel ───────────────────────────────────── */
+  .panel {
+    background: var(--panel);
+    border: 1px solid var(--rule);
+    border-radius: 6px;
+    box-shadow: var(--shadow-sm);
+    overflow: hidden;
+  }
+  .panel-head {
+    padding: 12px 20px;
+    border-bottom: 1px solid var(--rule);
+    background: #FAFBFC;
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    color: var(--ink-soft);
+  }
+  .panel-body { padding: 4px 0; }
+
+  .definition {
+    display: grid;
+    grid-template-columns: 240px 1fr;
+    gap: 24px;
+    padding: 12px 20px;
+    border-bottom: 1px solid var(--rule-soft);
+  }
+  .definition:last-child { border-bottom: none; }
+  .definition dt {
+    color: var(--weg-blue);
+    font-weight: 600;
+    font-size: 13px;
+  }
+  .definition dd {
+    margin: 0;
+    color: var(--ink-soft);
+    font-size: 13px;
+    line-height: 1.55;
+  }
+  .definition dd code {
+    background: var(--weg-blue-lt);
+    color: var(--weg-blue);
+    padding: 1px 6px;
+    border-radius: 3px;
+    font-size: 12px;
+    font-family: 'Consolas', 'Monaco', monospace;
+  }
+  .bands {
+    display: inline-flex;
+    gap: 6px;
+    margin-top: 4px;
+    flex-wrap: wrap;
+  }
+  .band {
+    background: var(--bg);
+    padding: 1px 8px;
+    border-radius: 3px;
+    font-size: 12px;
+    font-family: 'Consolas', 'Monaco', monospace;
+    border: 1px solid var(--rule);
+  }
+  .band b { color: var(--weg-blue); }
+
+  /* ─── Footer ───────────────────────────────────────────────── */
+  footer {
+    margin-top: 28px;
+    padding-top: 16px;
+    border-top: 1px solid var(--rule);
+    display: flex;
+    justify-content: space-between;
+    font-size: 11px;
+    color: var(--muted);
+    letter-spacing: 0.4px;
+    text-transform: uppercase;
+  }
+
+  @media print {
+    body { background: #fff; }
+    .topbar, .kpi-card, .panel, .chart-card { box-shadow: none; }
+  }
+</style>
+</head>
+<body>
+
+<style>
+  .app-navbar {
+    background: #FFFFFF;
+    border-bottom: 1px solid #E1E6EB;
+    box-shadow: 0 1px 2px rgba(44, 62, 80, 0.06);
+    padding: 0 24px;
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    height: 64px;
+    font-family: 'Open Sans', sans-serif;
+  }
+  .app-navbar .weg-logo { height: 38px; flex-shrink: 0; }
+  .app-navbar .brand-name {
+    color: #00579E; font-weight: 700; font-size: 18px; letter-spacing: -0.2px;
+    margin-right: 24px;
+  }
+  .app-navbar .navbar-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 0 14px;
+    height: 40px;
+    color: #5A6878;
+    font-weight: 600;
+    font-size: 13px;
+    text-decoration: none;
+    border-radius: 6px;
+    transition: all 0.12s ease;
+  }
+  .app-navbar .navbar-link:hover {
+    color: #00579E;
+    background: #E5EFF7;
+  }
+  .app-navbar .navbar-link.active {
+    color: #00579E;
+    background: #E5EFF7;
+  }
+  .app-navbar .navbar-icon { font-size: 14px; }
+  .app-navbar .navbar-meta {
+    margin-left: auto;
+    display: flex;
+    gap: 16px;
+    align-items: center;
+    font-size: 12px;
+    color: #5A6878;
+  }
+  .app-navbar .navbar-pill {
+    background: #E5EFF7;
+    color: #00579E;
+    padding: 4px 10px;
+    border-radius: 4px;
+    font-weight: 600;
+  }
+</style>
+<nav class="app-navbar">
+  <img class="weg-logo" alt="WEG" src="data:image/png;base64,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">
+  <span class="brand-name">WEG Gear Systems</span>
+  <a href="index.html" class="navbar-link"><span class="navbar-icon">⌂</span> Overview</a> <a href="kpi_dashboard.html" class="navbar-link active"><span class="navbar-icon">▦</span> Stock Dashboard</a> <a href="stock_history.html" class="navbar-link"><span class="navbar-icon">📈</span> Stock History and Projection</a> <a href="material_planning.html" class="navbar-link"><span class="navbar-icon">📋</span> Material Planning</a>
+  <div class="navbar-meta">
+    <span>Reference: <span class="navbar-pill">30/04/2026</span></span>
+    <span>Updated: 30/04/2026 13:29</span>
+  </div>
+</nav>
+
+
+
+
+<div class="page">
+
+  <div class="section-header">Key Indicators</div>
+
+  <div class="kpi-row">
+
+    <div class="kpi-card headline">
+      <div class="kpi-head">
+        <span class="kpi-label">Total stock value</span>
+      </div>
+      <div class="kpi-value">
+        <span class="currency">EUR</span>16.650.635,22
+      </div>
+      <div class="kpi-foot">
+        <span>7.285 materials</span>
+        <span>Baseline · 100%</span>
+      </div>
+    </div>
+
+    <div class="kpi-card">
+      <div class="kpi-head">
+        <span class="kpi-label">No movement<br>&gt; 180 days</span>
+        <span class="kpi-badge warn">Warning</span>
+      </div>
+      <div class="kpi-value">
+        <span class="currency">EUR</span>1.671.770,69
+        <span class="kpi-pct">10,0%</span>
+      </div>
+      <div class="progress">
+        <div class="progress-fill warn" style="width: 10.040281754487921%"></div>
+      </div>
+      <div class="kpi-foot">
+        <span>1.259 materials</span>
+        <span>now</span>
+      </div>
+    </div>
+
+    <div class="kpi-card">
+      <div class="kpi-head">
+        <span class="kpi-label">No movement<br>EOM projection</span>
+        <span class="kpi-badge warn">+0d</span>
+      </div>
+      <div class="kpi-value">
+        <span class="currency">EUR</span>1.671.770,69
+        <span class="kpi-pct">10,0%</span>
+      </div>
+      <div class="progress">
+        <div class="progress-fill warn" style="width: 10.040281754487921%"></div>
+      </div>
+      <div class="kpi-foot">
+        <span>1.259 materials</span>
+        <span>end of month</span>
+      </div>
+    </div>
+
+    <div class="kpi-card">
+      <div class="kpi-head">
+        <span class="kpi-label">Provision loss<br>current</span>
+        <span class="kpi-badge warn">Warning</span>
+      </div>
+      <div class="kpi-value">
+        <span class="currency">EUR</span>498.035,38
+        <span class="kpi-pct">3,0%</span>
+      </div>
+      <div class="kpi-foot">
+        <span>weighted by age band</span>
+        <span>now</span>
+      </div>
+    </div>
+
+    <div class="kpi-card">
+      <div class="kpi-head">
+        <span class="kpi-label">Provision loss<br>EOM projection</span>
+        <span class="kpi-badge warn">+0d</span>
+      </div>
+      <div class="kpi-value">
+        <span class="currency">EUR</span>498.035,38
+        <span class="kpi-pct">3,0%</span>
+      </div>
+      <div class="kpi-foot">
+        <span>P&amp;L exposure</span>
+        <span>end of month</span>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="section-header">Monthly History · last 12 months</div>
+
+  <div class="chart-row">
+
+    <div class="chart-card">
+      <div class="chart-head">
+        <span class="chart-title">Total stock value</span>
+        <span class="chart-sub">EUR · month-end snapshot</span>
+      </div>
+      <div class="chart-body">
+        <svg viewBox="0 0 760 240" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Total stock value, monthly"><line x1="56" y1="204.0" x2="744" y2="204.0" class="grid"/><text x="48" y="208.0" class="axis y">15,3M</text><line x1="56" y1="159.0" x2="744" y2="159.0" class="grid"/><text x="48" y="163.0" class="axis y">15,9M</text><line x1="56" y1="114.0" x2="744" y2="114.0" class="grid"/><text x="48" y="118.0" class="axis y">16,4M</text><line x1="56" y1="69.0" x2="744" y2="69.0" class="grid"/><text x="48" y="73.0" class="axis y">17,0M</text><line x1="56" y1="24.0" x2="744" y2="24.0" class="grid"/><text x="48" y="28.0" class="axis y">17,6M</text><path d="M 56.0,204.0 56.0,98.0 L 118.5,76.4 L 181.1,91.3 L 243.6,39.0 L 306.2,59.2 L 368.7,123.5 L 431.3,149.0 L 493.8,143.7 L 556.4,176.6 L 618.9,189.0 L 681.5,127.3 L 744.0,96.4 L 744.0,204.0 Z" fill="rgba(0, 87, 158, 0.12)" stroke="none"/><path d="M 56.0,98.0 L 118.5,76.4 L 181.1,91.3 L 243.6,39.0 L 306.2,59.2 L 368.7,123.5 L 431.3,149.0 L 493.8,143.7 L 556.4,176.6 L 618.9,189.0 L 681.5,127.3 L 744.0,96.4" fill="none" stroke="#00579E" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/><circle cx="744.0" cy="96.4" r="4" fill="#fff" stroke="#00579E" stroke-width="2"/><text x="744.0" y="84.4" class="value" text-anchor="middle" fill="#00579E">16,7M</text><text x="56.0" y="222.0" class="axis x" text-anchor="middle">May/25</text><text x="181.1" y="222.0" class="axis x" text-anchor="middle">Jul/25</text><text x="306.2" y="222.0" class="axis x" text-anchor="middle">Sep/25</text><text x="431.3" y="222.0" class="axis x" text-anchor="middle">Nov/25</text><text x="556.4" y="222.0" class="axis x" text-anchor="middle">Jan/26</text><text x="681.5" y="222.0" class="axis x" text-anchor="middle">Mar/26</text><text x="744.0" y="222.0" class="axis x" text-anchor="middle">Apr/26</text></svg>
+      </div>
+    </div>
+
+    <div class="chart-card">
+      <div class="chart-head">
+        <span class="chart-title">Slow Moving Inventory (SMI)</span>
+        <span class="chart-sub">EUR · &gt; 180 days no movement</span>
+      </div>
+      <div class="chart-body">
+        <svg viewBox="0 0 760 240" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Slow Moving Inventory, monthly"><line x1="56" y1="204.0" x2="744" y2="204.0" class="grid"/><text x="48" y="208.0" class="axis y">923k</text><line x1="56" y1="159.0" x2="744" y2="159.0" class="grid"/><text x="48" y="163.0" class="axis y">1,1M</text><line x1="56" y1="114.0" x2="744" y2="114.0" class="grid"/><text x="48" y="118.0" class="axis y">1,3M</text><line x1="56" y1="69.0" x2="744" y2="69.0" class="grid"/><text x="48" y="73.0" class="axis y">1,6M</text><line x1="56" y1="24.0" x2="744" y2="24.0" class="grid"/><text x="48" y="28.0" class="axis y">1,8M</text><path d="M 56.0,204.0 56.0,116.8 L 118.5,136.7 L 181.1,108.2 L 243.6,119.4 L 306.2,106.3 L 368.7,189.0 L 431.3,126.3 L 493.8,148.1 L 556.4,128.1 L 618.9,39.0 L 681.5,49.4 L 744.0,44.6 L 744.0,204.0 Z" fill="rgba(243, 156, 18, 0.14)" stroke="none"/><path d="M 56.0,116.8 L 118.5,136.7 L 181.1,108.2 L 243.6,119.4 L 306.2,106.3 L 368.7,189.0 L 431.3,126.3 L 493.8,148.1 L 556.4,128.1 L 618.9,39.0 L 681.5,49.4 L 744.0,44.6" fill="none" stroke="#F39C12" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/><circle cx="744.0" cy="44.6" r="4" fill="#fff" stroke="#F39C12" stroke-width="2"/><text x="744.0" y="32.6" class="value" text-anchor="middle" fill="#F39C12">1,7M</text><text x="56.0" y="222.0" class="axis x" text-anchor="middle">May/25</text><text x="181.1" y="222.0" class="axis x" text-anchor="middle">Jul/25</text><text x="306.2" y="222.0" class="axis x" text-anchor="middle">Sep/25</text><text x="431.3" y="222.0" class="axis x" text-anchor="middle">Nov/25</text><text x="556.4" y="222.0" class="axis x" text-anchor="middle">Jan/26</text><text x="681.5" y="222.0" class="axis x" text-anchor="middle">Mar/26</text><text x="744.0" y="222.0" class="axis x" text-anchor="middle">Apr/26</text></svg>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="section-header">Definitions</div>
+
+  <div class="panel">
+    <div class="panel-head">How each indicator is calculated</div>
+    <div class="panel-body">
+      <dl>
+        <div class="definition">
+          <dt>Total stock value</dt>
+          <dd>Sum of <code>Vl.Etq.T.D</code> across all materials in the SAP report, on the reference date.</dd>
+        </div>
+        <div class="definition">
+          <dt>No movement &gt; 180 days</dt>
+          <dd>Materials whose <code>NºDias Con</code> (days without consumption) is greater than 180. This is the SAP column used by the company's standard slow-moving calculation.</dd>
+        </div>
+        <div class="definition">
+          <dt>EOM projection</dt>
+          <dd>Same rule applied 0 days ahead, assuming no further issues. Useful as an early warning for next month's provision.</dd>
+        </div>
+        <div class="definition">
+          <dt>Provision loss</dt>
+          <dd>
+            Per-material write-down weighted by aging band, summed across all materials.
+            <div class="bands">
+              <span class="band">181–360d → <b>25%</b></span>
+              <span class="band">361–720d → <b>50%</b></span>
+              <span class="band">&gt; 720d → <b>100%</b></span>
+            </div>
+          </dd>
+        </div>
+        <div class="definition">
+          <dt>Monthly history</dt>
+          <dd>For each month, the latest SAP file of that month is taken as the month-end snapshot. Cached in <code>history_cache.json</code> for incremental updates.</dd>
+        </div>
+      </dl>
+    </div>
+  </div>
+
+  <footer>
+    <span>EP0 · PPC · WC-AUFTR · Source:  20260429183121.AT_MM_000036.txt</span>
+    <span>Internal use only</span>
+  </footer>
+
+</div>
+</body>
+</html>
