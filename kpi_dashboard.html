@@ -98,18 +98,20 @@
   }
 
   /* ─── Section header ───────────────────────────────────────── */
-  .section-header {
+  .section-header,
+  .section-title {
     display: flex;
     align-items: center;
     gap: 10px;
-    margin: 8px 0 14px;
+    margin: 24px 0 14px;
     color: var(--weg-blue);
     font-weight: 700;
     font-size: 13px;
     letter-spacing: 0.6px;
     text-transform: uppercase;
   }
-  .section-header::before {
+  .section-header::before,
+  .section-title::before {
     content: '';
     width: 4px;
     height: 16px;
@@ -117,6 +119,105 @@
     border-radius: 2px;
   }
 
+  /* ─── Top materials block ──────────────────────────────────── */
+  .top-block {
+    background: var(--panel);
+    border: 1px solid var(--rule);
+    border-radius: 8px;
+    box-shadow: var(--shadow-sm);
+    overflow: hidden;
+    margin-bottom: 24px;
+  }
+  .top-tabs {
+    display: flex;
+    border-bottom: 1px solid var(--rule);
+    background: var(--rule-soft);
+    padding: 0 6px;
+  }
+  .top-tab-btn {
+    border: none;
+    background: none;
+    padding: 12px 18px;
+    font-family: inherit;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--ink-soft);
+    cursor: pointer;
+    letter-spacing: 0.4px;
+    border-bottom: 2px solid transparent;
+    transition: all 0.12s ease;
+    text-transform: uppercase;
+  }
+  .top-tab-btn:hover { color: var(--weg-blue); }
+  .top-tab-btn.active {
+    color: var(--weg-blue);
+    border-bottom-color: var(--weg-blue);
+    background: var(--panel);
+  }
+  .top-pane { display: none; }
+  .top-pane.active { display: block; }
+  .top-meta {
+    padding: 14px 20px;
+    border-bottom: 1px solid var(--rule-soft);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 12px;
+    color: var(--ink-soft);
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  .top-meta-label {
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-weight: 600;
+  }
+  .top-meta-value strong { color: var(--weg-blue); font-weight: 700; }
+  .top-empty {
+    padding: 36px 20px;
+    text-align: center;
+    color: var(--muted);
+    font-style: italic;
+    font-size: 13px;
+  }
+  .top-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 12.5px;
+  }
+  .top-table th {
+    text-align: left;
+    padding: 10px 14px;
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--ink-soft);
+    background: var(--rule-soft);
+    border-bottom: 1px solid var(--rule);
+    white-space: nowrap;
+  }
+  .top-table td {
+    padding: 8px 14px;
+    border-bottom: 1px solid var(--rule-soft);
+    vertical-align: middle;
+  }
+  .top-table tr:last-child td { border-bottom: none; }
+  .top-table .num { text-align: right; font-variant-numeric: tabular-nums; }
+  .top-table .rank {
+    color: var(--muted); font-weight: 700; font-size: 11px;
+    width: 38px; text-align: center;
+  }
+  .top-table .material {
+    color: var(--weg-blue); font-weight: 600; white-space: nowrap;
+  }
+  .top-table .desc {
+    max-width: 360px;
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  }
+  .top-table .pct { color: var(--ink-soft); font-weight: 600; }
+  .top-table .cum { color: var(--muted); font-weight: 600; }
+  
   /* ─── KPI cards row ────────────────────────────────────────── */
   .kpi-row {
     display: grid;
@@ -436,7 +537,7 @@
   <a href="index.html" class="navbar-link"><span class="navbar-icon">⌂</span> Overview</a> <a href="kpi_dashboard.html" class="navbar-link active"><span class="navbar-icon">▦</span> Stock Dashboard</a> <a href="stock_history.html" class="navbar-link"><span class="navbar-icon">📈</span> Stock History and Projection</a> <a href="material_planning.html" class="navbar-link"><span class="navbar-icon">📋</span> Material Planning</a>
   <div class="navbar-meta">
     <span>Reference: <span class="navbar-pill">30/04/2026</span></span>
-    <span>Updated: 30/04/2026 13:29</span>
+    <span>Updated: 30/04/2026 14:54</span>
   </div>
 </nav>
 
@@ -555,6 +656,86 @@
     </div>
 
   </div>
+
+  
+    <div class="section-title">Top materials by impact</div>
+    <div class="top-block">
+      <div class="top-tabs"><button class="top-tab-btn active" data-toptab="smi">Top materials · SMI</button><button class="top-tab-btn" data-toptab="provision_now">Top materials · Provision Loss now</button><button class="top-tab-btn" data-toptab="provision_eom">Top materials · Provision Loss EOM</button></div>
+      
+        <div class="top-pane active" data-toptab="smi">
+          <div class="top-meta">
+            <span class="top-meta-label">EUR · no movement > 180d</span>
+            <span class="top-meta-value"><strong>50</strong> materials make <strong>40%</strong> of the total (663.770,74 of 1.671.770,69 EUR)</span>
+          </div>
+          <table class="top-table">
+            <thead>
+              <tr>
+                <th class="rank">#</th>
+                <th>Material</th>
+                <th>Description</th>
+                <th class="num">Value (EUR)</th>
+                <th class="num">% Total</th>
+                <th class="num">Cumulative %</th>
+              </tr>
+            </thead>
+            <tbody><tr><td class="rank">1</td><td class="material">18691551</td><td class="desc" title="MOTOR 355kW 4P 355A/B WFF2">MOTOR 355kW 4P 355A/B WFF2</td><td class="num">94.215,38</td><td class="num pct">5.6%</td><td class="num cum">5.6%</td></tr><tr><td class="rank">2</td><td class="material">18691552</td><td class="desc" title="MOTOR 315kW 6P 355A/B WFF2">MOTOR 315kW 6P 355A/B WFF2</td><td class="num">53.991,52</td><td class="num pct">3.2%</td><td class="num cum">8.9%</td></tr><tr><td class="rank">3</td><td class="material">17206362</td><td class="desc" title="MOTOR 75kW 4P 280S/M WFF2">MOTOR 75kW 4P 280S/M WFF2</td><td class="num">24.787,28</td><td class="num pct">1.5%</td><td class="num cum">10.3%</td></tr><tr><td class="rank">4</td><td class="material">17007118</td><td class="desc" title="PART-PC TAMPA CARCACA MAS H130 C160 BRUT">PART-PC TAMPA CARCACA MAS H130 C160 BRUT</td><td class="num">22.333,51</td><td class="num pct">1.3%</td><td class="num cum">11.7%</td></tr><tr><td class="rank">5</td><td class="material">17717374</td><td class="desc" title="PART-PC EIXO SAIDA WCG20 S07 50X100">PART-PC EIXO SAIDA WCG20 S07 50X100</td><td class="num">21.204,16</td><td class="num pct">1.3%</td><td class="num cum">13.0%</td></tr><tr><td class="rank">6</td><td class="material">14694522</td><td class="desc" title="MOTOR 0.75kW 4P 80 WAF1 MOTOR MODU">MOTOR 0.75kW 4P 80 WAF1 MOTOR MODU</td><td class="num">18.288,17</td><td class="num pct">1.1%</td><td class="num cum">14.0%</td></tr><tr><td class="rank">7</td><td class="material">12664126</td><td class="desc" title="MOTOR 30kW 4P 200M/L WAF1 MOTOR MODU">MOTOR 30kW 4P 200M/L WAF1 MOTOR MODU</td><td class="num">17.657,84</td><td class="num pct">1.1%</td><td class="num cum">15.1%</td></tr><tr><td class="rank">8</td><td class="material">13840542</td><td class="desc" title="PART-PC CARCACA REDUTOR WCG20 K15/N15 B3">PART-PC CARCACA REDUTOR WCG20 K15/N15 B3</td><td class="num">15.462,65</td><td class="num pct">0.9%</td><td class="num cum">16.0%</td></tr><tr><td class="rank">9</td><td class="material">15761531</td><td class="desc" title="ASSENTO MANCAL MAS K80">ASSENTO MANCAL MAS K80</td><td class="num">14.731,30</td><td class="num pct">0.9%</td><td class="num cum">16.9%</td></tr><tr><td class="rank">10</td><td class="material">13840506</td><td class="desc" title="PART-PC CARCACA REDUTOR WCG20 K12/N12 B3">PART-PC CARCACA REDUTOR WCG20 K12/N12 B3</td><td class="num">13.957,20</td><td class="num pct">0.8%</td><td class="num cum">17.7%</td></tr><tr><td class="rank">11</td><td class="material">16050923</td><td class="desc" title="BARRA RED ASTM 17-4 PH 31mm">BARRA RED ASTM 17-4 PH 31mm</td><td class="num">12.268,20</td><td class="num pct">0.7%</td><td class="num cum">18.5%</td></tr><tr><td class="rank">12</td><td class="material">15133430</td><td class="desc" title="CARCACA MAS H136 B35">CARCACA MAS H136 B35</td><td class="num">12.220,23</td><td class="num pct">0.7%</td><td class="num cum">19.2%</td></tr><tr><td class="rank">13</td><td class="material">15133398</td><td class="desc" title="CARCACA MAS K85 B35">CARCACA MAS K85 B35</td><td class="num">12.156,03</td><td class="num pct">0.7%</td><td class="num cum">19.9%</td></tr><tr><td class="rank">14</td><td class="material">13957594</td><td class="desc" title="MOTOR 18kW 2P 132M WFF2">MOTOR 18kW 2P 132M WFF2</td><td class="num">12.075,60</td><td class="num pct">0.7%</td><td class="num cum">20.7%</td></tr><tr><td class="rank">15</td><td class="material">14585850</td><td class="desc" title="MOTOR 75kW 4P 250S/M WFF2">MOTOR 75kW 4P 250S/M WFF2</td><td class="num">12.057,30</td><td class="num pct">0.7%</td><td class="num cum">21.4%</td></tr><tr><td class="rank">16</td><td class="material">15076905</td><td class="desc" title="ENGR MAS K139 OG 237 6 Z063 170">ENGR MAS K139 OG 237 6 Z063 170</td><td class="num">11.996,79</td><td class="num pct">0.7%</td><td class="num cum">22.1%</td></tr><tr><td class="rank">17</td><td class="material">17530343</td><td class="desc" title="MOTOR 75kW 4P 280S/M WFF2 MOTOFR W22">MOTOR 75kW 4P 280S/M WFF2 MOTOFR W22</td><td class="num">11.710,76</td><td class="num pct">0.7%</td><td class="num cum">22.8%</td></tr><tr><td class="rank">18</td><td class="material">16443115</td><td class="desc" title="MOTOR 22kW 4P 180L WFF2">MOTOR 22kW 4P 180L WFF2</td><td class="num">11.657,70</td><td class="num pct">0.7%</td><td class="num cum">23.5%</td></tr><tr><td class="rank">19</td><td class="material">13832699</td><td class="desc" title="PART-PC CARCACA REDUTOR WCG20 F06 B5 BRU">PART-PC CARCACA REDUTOR WCG20 F06 B5 BRU</td><td class="num">11.553,84</td><td class="num pct">0.7%</td><td class="num cum">24.2%</td></tr><tr><td class="rank">20</td><td class="material">17162801</td><td class="desc" title="PART-PC CESTARI CARCACA C00 GEAR BOX">PART-PC CESTARI CARCACA C00 GEAR BOX</td><td class="num">11.241,75</td><td class="num pct">0.7%</td><td class="num cum">24.9%</td></tr><tr><td class="rank">21</td><td class="material">17162802</td><td class="desc" title="PART-PC CESTARI CARCACA C00 GEAR BOX">PART-PC CESTARI CARCACA C00 GEAR BOX</td><td class="num">11.021,60</td><td class="num pct">0.7%</td><td class="num cum">25.5%</td></tr><tr><td class="rank">22</td><td class="material">16950489</td><td class="desc" title="MOTOR 112 4kW 4P W21 S">MOTOR 112 4kW 4P W21 S</td><td class="num">10.420,50</td><td class="num pct">0.6%</td><td class="num cum">26.1%</td></tr><tr><td class="rank">23</td><td class="material">18641595</td><td class="desc" title="EIXO INSERCAO MAS 60X120">EIXO INSERCAO MAS 60X120</td><td class="num">10.399,20</td><td class="num pct">0.6%</td><td class="num cum">26.8%</td></tr><tr><td class="rank">24</td><td class="material">16833382</td><td class="desc" title="MOTOR 3F 800W 230/400V 50Hz 4P">MOTOR 3F 800W 230/400V 50Hz 4P</td><td class="num">10.080,51</td><td class="num pct">0.6%</td><td class="num cum">27.4%</td></tr><tr><td class="rank">25</td><td class="material">15132814</td><td class="desc" title="EIXO ADAPT ENTRADA MAS SERVO 180">EIXO ADAPT ENTRADA MAS SERVO 180</td><td class="num">9.841,62</td><td class="num pct">0.6%</td><td class="num cum">28.0%</td></tr><tr><td class="rank">26</td><td class="material">13834861</td><td class="desc" title="PART-PC FLANGE SAIDA WCG20 F10 F450 BRUT">PART-PC FLANGE SAIDA WCG20 F10 F450 BRUT</td><td class="num">9.734,00</td><td class="num pct">0.6%</td><td class="num cum">28.5%</td></tr><tr><td class="rank">27</td><td class="material">15165020</td><td class="desc" title="BARRA RED 1.1191 C45E 58mmh9">BARRA RED 1.1191 C45E 58mmh9</td><td class="num">9.005,43</td><td class="num pct">0.5%</td><td class="num cum">29.1%</td></tr><tr><td class="rank">28</td><td class="material">15113454</td><td class="desc" title="PAR CONICO MAS C130, K136 3,18">PAR CONICO MAS C130, K136 3,18</td><td class="num">8.943,12</td><td class="num pct">0.5%</td><td class="num cum">29.6%</td></tr><tr><td class="rank">29</td><td class="material">18349707</td><td class="desc" title="ENGR MAS K86 114">ENGR MAS K86 114</td><td class="num">8.802,00</td><td class="num pct">0.5%</td><td class="num cum">30.1%</td></tr><tr><td class="rank">30</td><td class="material">15162282</td><td class="desc" title="MOTOR 45kW 4P 225S/M WFF2">MOTOR 45kW 4P 225S/M WFF2</td><td class="num">8.610,45</td><td class="num pct">0.5%</td><td class="num cum">30.7%</td></tr><tr><td class="rank">31</td><td class="material">15143429</td><td class="desc" title="EIXO SAIDA MAS OS F85 50X248">EIXO SAIDA MAS OS F85 50X248</td><td class="num">8.604,00</td><td class="num pct">0.5%</td><td class="num cum">31.2%</td></tr><tr><td class="rank">32</td><td class="material">18798686</td><td class="desc" title="PART-PC EIXO SAIDA WCG20 F08/V08, K08/N0">PART-PC EIXO SAIDA WCG20 F08/V08, K08/N0</td><td class="num">8.534,12</td><td class="num pct">0.5%</td><td class="num cum">31.7%</td></tr><tr><td class="rank">33</td><td class="material">14030479</td><td class="desc" title="CARCACA WCG20 V04 B35 BASE">CARCACA WCG20 V04 B35 BASE</td><td class="num">8.522,40</td><td class="num pct">0.5%</td><td class="num cum">32.2%</td></tr><tr><td class="rank">34</td><td class="material">15164948</td><td class="desc" title="BARRA RED 1.7131 16MnCr5 52mmh9">BARRA RED 1.7131 16MnCr5 52mmh9</td><td class="num">8.147,10</td><td class="num pct">0.5%</td><td class="num cum">32.7%</td></tr><tr><td class="rank">35</td><td class="material">18348427</td><td class="desc" title="ENGR MAS A86, F85 99">ENGR MAS A86, F85 99</td><td class="num">8.106,00</td><td class="num pct">0.5%</td><td class="num cum">33.2%</td></tr><tr><td class="rank">36</td><td class="material">14515143</td><td class="desc" title="MOTOR 11kW 4P 160M WFF2">MOTOR 11kW 4P 160M WFF2</td><td class="num">7.907,70</td><td class="num pct">0.5%</td><td class="num cum">33.6%</td></tr><tr><td class="rank">37</td><td class="material">15187706</td><td class="desc" title="ESTATOR FDW 23N 195Vcc 150Nm">ESTATOR FDW 23N 195Vcc 150Nm</td><td class="num">7.785,18</td><td class="num pct">0.5%</td><td class="num cum">34.1%</td></tr><tr><td class="rank">38</td><td class="material">17857280</td><td class="desc" title="PART-PC FLANGE SAIDA WG01/WCG01 WCG01 63">PART-PC FLANGE SAIDA WG01/WCG01 WCG01 63</td><td class="num">7.774,20</td><td class="num pct">0.5%</td><td class="num cum">34.6%</td></tr><tr><td class="rank">39</td><td class="material">17086766</td><td class="desc" title="MOTOR 15kW 4P 180M WFF2">MOTOR 15kW 4P 180M WFF2</td><td class="num">7.558,11</td><td class="num pct">0.5%</td><td class="num cum">35.0%</td></tr><tr><td class="rank">40</td><td class="material">18080450</td><td class="desc" title="REDUTOR EST WG01 30 1 1:25 NCJ 63 14">REDUTOR EST WG01 30 1 1:25 NCJ 63 14</td><td class="num">7.529,73</td><td class="num pct">0.5%</td><td class="num cum">35.5%</td></tr><tr><td class="rank">41</td><td class="material">18568201</td><td class="desc" title="WG20 K15 3 HS 225 45kW 4P W22">WG20 K15 3 HS 225 45kW 4P W22</td><td class="num">7.483,17</td><td class="num pct">0.4%</td><td class="num cum">35.9%</td></tr><tr><td class="rank">42</td><td class="material">18080961</td><td class="desc" title="REDUTOR EST WG01 90 1 1:40 NCH 80 35">REDUTOR EST WG01 90 1 1:40 NCH 80 35</td><td class="num">7.431,34</td><td class="num pct">0.4%</td><td class="num cum">36.4%</td></tr><tr><td class="rank">43</td><td class="material">18080960</td><td class="desc" title="REDUTOR EST WG01 90 1 1:40 NCJ 80 35">REDUTOR EST WG01 90 1 1:40 NCJ 80 35</td><td class="num">7.426,44</td><td class="num pct">0.4%</td><td class="num cum">36.8%</td></tr><tr><td class="rank">44</td><td class="material">17857234</td><td class="desc" title="PART-PC FLANGE SAIDA WG01/WCG01 WCG01 40">PART-PC FLANGE SAIDA WG01/WCG01 WCG01 40</td><td class="num">7.203,75</td><td class="num pct">0.4%</td><td class="num cum">37.2%</td></tr><tr><td class="rank">45</td><td class="material">18727251</td><td class="desc" title="MOTOR 132kW 4P 315S/M WFF2">MOTOR 132kW 4P 315S/M WFF2</td><td class="num">7.188,22</td><td class="num pct">0.4%</td><td class="num cum">37.7%</td></tr><tr><td class="rank">46</td><td class="material">15133470</td><td class="desc" title="CARCACA MAS F111 B35">CARCACA MAS F111 B35</td><td class="num">7.112,16</td><td class="num pct">0.4%</td><td class="num cum">38.1%</td></tr><tr><td class="rank">47</td><td class="material">14684835</td><td class="desc" title="CARCACA WCG20 C14 B5 SEM PES HPP115R BAS">CARCACA WCG20 C14 B5 SEM PES HPP115R BAS</td><td class="num">7.095,17</td><td class="num pct">0.4%</td><td class="num cum">38.5%</td></tr><tr><td class="rank">48</td><td class="material">17347174</td><td class="desc" title="FLANGE SAID WCG20 S03 F120 B5 120X22 USI">FLANGE SAID WCG20 S03 F120 B5 120X22 USI</td><td class="num">6.996,60</td><td class="num pct">0.4%</td><td class="num cum">38.9%</td></tr><tr><td class="rank">49</td><td class="material">18568200</td><td class="desc" title="WG20 K15 3 HS 200 37kW 4P W22">WG20 K15 3 HS 200 37kW 4P W22</td><td class="num">6.626,39</td><td class="num pct">0.4%</td><td class="num cum">39.3%</td></tr><tr><td class="rank">50</td><td class="material">15148082</td><td class="desc" title="FLANGE ENTR MAS IEC 180 68">FLANGE ENTR MAS IEC 180 68</td><td class="num">6.313,32</td><td class="num pct">0.4%</td><td class="num cum">39.7%</td></tr></tbody>
+          </table>
+        </div>
+        
+        <div class="top-pane" data-toptab="provision_now">
+          <div class="top-meta">
+            <span class="top-meta-label">EUR · weighted by age band</span>
+            <span class="top-meta-value"><strong>50</strong> materials make <strong>40%</strong> of the total (201.378,75 of 498.035,39 EUR)</span>
+          </div>
+          <table class="top-table">
+            <thead>
+              <tr>
+                <th class="rank">#</th>
+                <th>Material</th>
+                <th>Description</th>
+                <th class="num">Value (EUR)</th>
+                <th class="num">% Total</th>
+                <th class="num">Cumulative %</th>
+              </tr>
+            </thead>
+            <tbody><tr><td class="rank">1</td><td class="material">18691551</td><td class="desc" title="MOTOR 355kW 4P 355A/B WFF2">MOTOR 355kW 4P 355A/B WFF2</td><td class="num">23.553,85</td><td class="num pct">4.7%</td><td class="num cum">4.7%</td></tr><tr><td class="rank">2</td><td class="material">18691552</td><td class="desc" title="MOTOR 315kW 6P 355A/B WFF2">MOTOR 315kW 6P 355A/B WFF2</td><td class="num">13.497,88</td><td class="num pct">2.7%</td><td class="num cum">7.4%</td></tr><tr><td class="rank">3</td><td class="material">17206362</td><td class="desc" title="MOTOR 75kW 4P 280S/M WFF2">MOTOR 75kW 4P 280S/M WFF2</td><td class="num">6.196,82</td><td class="num pct">1.2%</td><td class="num cum">8.7%</td></tr><tr><td class="rank">4</td><td class="material">14585850</td><td class="desc" title="MOTOR 75kW 4P 250S/M WFF2">MOTOR 75kW 4P 250S/M WFF2</td><td class="num">6.028,65</td><td class="num pct">1.2%</td><td class="num cum">9.9%</td></tr><tr><td class="rank">5</td><td class="material">17530343</td><td class="desc" title="MOTOR 75kW 4P 280S/M WFF2 MOTOFR W22">MOTOR 75kW 4P 280S/M WFF2 MOTOFR W22</td><td class="num">5.855,38</td><td class="num pct">1.2%</td><td class="num cum">11.1%</td></tr><tr><td class="rank">6</td><td class="material">17162801</td><td class="desc" title="PART-PC CESTARI CARCACA C00 GEAR BOX">PART-PC CESTARI CARCACA C00 GEAR BOX</td><td class="num">5.620,88</td><td class="num pct">1.1%</td><td class="num cum">12.2%</td></tr><tr><td class="rank">7</td><td class="material">17007118</td><td class="desc" title="PART-PC TAMPA CARCACA MAS H130 C160 BRUT">PART-PC TAMPA CARCACA MAS H130 C160 BRUT</td><td class="num">5.583,38</td><td class="num pct">1.1%</td><td class="num cum">13.3%</td></tr><tr><td class="rank">8</td><td class="material">17162802</td><td class="desc" title="PART-PC CESTARI CARCACA C00 GEAR BOX">PART-PC CESTARI CARCACA C00 GEAR BOX</td><td class="num">5.510,80</td><td class="num pct">1.1%</td><td class="num cum">14.4%</td></tr><tr><td class="rank">9</td><td class="material">17717374</td><td class="desc" title="PART-PC EIXO SAIDA WCG20 S07 50X100">PART-PC EIXO SAIDA WCG20 S07 50X100</td><td class="num">5.301,04</td><td class="num pct">1.1%</td><td class="num cum">15.5%</td></tr><tr><td class="rank">10</td><td class="material">16950489</td><td class="desc" title="MOTOR 112 4kW 4P W21 S">MOTOR 112 4kW 4P W21 S</td><td class="num">5.210,25</td><td class="num pct">1.0%</td><td class="num cum">16.5%</td></tr><tr><td class="rank">11</td><td class="material">16833382</td><td class="desc" title="MOTOR 3F 800W 230/400V 50Hz 4P">MOTOR 3F 800W 230/400V 50Hz 4P</td><td class="num">5.040,26</td><td class="num pct">1.0%</td><td class="num cum">17.5%</td></tr><tr><td class="rank">12</td><td class="material">13834861</td><td class="desc" title="PART-PC FLANGE SAIDA WCG20 F10 F450 BRUT">PART-PC FLANGE SAIDA WCG20 F10 F450 BRUT</td><td class="num">4.867,00</td><td class="num pct">1.0%</td><td class="num cum">18.5%</td></tr><tr><td class="rank">13</td><td class="material">14694522</td><td class="desc" title="MOTOR 0.75kW 4P 80 WAF1 MOTOR MODU">MOTOR 0.75kW 4P 80 WAF1 MOTOR MODU</td><td class="num">4.572,04</td><td class="num pct">0.9%</td><td class="num cum">19.4%</td></tr><tr><td class="rank">14</td><td class="material">12664126</td><td class="desc" title="MOTOR 30kW 4P 200M/L WAF1 MOTOR MODU">MOTOR 30kW 4P 200M/L WAF1 MOTOR MODU</td><td class="num">4.414,46</td><td class="num pct">0.9%</td><td class="num cum">20.3%</td></tr><tr><td class="rank">15</td><td class="material">13840542</td><td class="desc" title="PART-PC CARCACA REDUTOR WCG20 K15/N15 B3">PART-PC CARCACA REDUTOR WCG20 K15/N15 B3</td><td class="num">3.865,66</td><td class="num pct">0.8%</td><td class="num cum">21.1%</td></tr><tr><td class="rank">16</td><td class="material">17086766</td><td class="desc" title="MOTOR 15kW 4P 180M WFF2">MOTOR 15kW 4P 180M WFF2</td><td class="num">3.779,05</td><td class="num pct">0.8%</td><td class="num cum">21.9%</td></tr><tr><td class="rank">17</td><td class="material">18080961</td><td class="desc" title="REDUTOR EST WG01 90 1 1:40 NCH 80 35">REDUTOR EST WG01 90 1 1:40 NCH 80 35</td><td class="num">3.715,67</td><td class="num pct">0.7%</td><td class="num cum">22.6%</td></tr><tr><td class="rank">18</td><td class="material">18080960</td><td class="desc" title="REDUTOR EST WG01 90 1 1:40 NCJ 80 35">REDUTOR EST WG01 90 1 1:40 NCJ 80 35</td><td class="num">3.713,22</td><td class="num pct">0.7%</td><td class="num cum">23.4%</td></tr><tr><td class="rank">19</td><td class="material">15761531</td><td class="desc" title="ASSENTO MANCAL MAS K80">ASSENTO MANCAL MAS K80</td><td class="num">3.682,82</td><td class="num pct">0.7%</td><td class="num cum">24.1%</td></tr><tr><td class="rank">20</td><td class="material">13840506</td><td class="desc" title="PART-PC CARCACA REDUTOR WCG20 K12/N12 B3">PART-PC CARCACA REDUTOR WCG20 K12/N12 B3</td><td class="num">3.489,30</td><td class="num pct">0.7%</td><td class="num cum">24.8%</td></tr><tr><td class="rank">21</td><td class="material">15133325</td><td class="desc" title="CARCACA MAS TAM 13 BRU">CARCACA MAS TAM 13 BRU</td><td class="num">3.078,74</td><td class="num pct">0.6%</td><td class="num cum">25.4%</td></tr><tr><td class="rank">22</td><td class="material">16050923</td><td class="desc" title="BARRA RED ASTM 17-4 PH 31mm">BARRA RED ASTM 17-4 PH 31mm</td><td class="num">3.067,05</td><td class="num pct">0.6%</td><td class="num cum">26.0%</td></tr><tr><td class="rank">23</td><td class="material">15133430</td><td class="desc" title="CARCACA MAS H136 B35">CARCACA MAS H136 B35</td><td class="num">3.055,06</td><td class="num pct">0.6%</td><td class="num cum">26.6%</td></tr><tr><td class="rank">24</td><td class="material">18080937</td><td class="desc" title="REDUTOR EST WG01 90 1 1:30 NCH 90 35">REDUTOR EST WG01 90 1 1:30 NCH 90 35</td><td class="num">3.053,30</td><td class="num pct">0.6%</td><td class="num cum">27.3%</td></tr><tr><td class="rank">25</td><td class="material">18080967</td><td class="desc" title="REDUTOR EST WG01 90 1 1:50 NCH 80 35">REDUTOR EST WG01 90 1 1:50 NCH 80 35</td><td class="num">3.041,72</td><td class="num pct">0.6%</td><td class="num cum">27.9%</td></tr><tr><td class="rank">26</td><td class="material">15133398</td><td class="desc" title="CARCACA MAS K85 B35">CARCACA MAS K85 B35</td><td class="num">3.039,01</td><td class="num pct">0.6%</td><td class="num cum">28.5%</td></tr><tr><td class="rank">27</td><td class="material">13957594</td><td class="desc" title="MOTOR 18kW 2P 132M WFF2">MOTOR 18kW 2P 132M WFF2</td><td class="num">3.018,90</td><td class="num pct">0.6%</td><td class="num cum">29.1%</td></tr><tr><td class="rank">28</td><td class="material">15076905</td><td class="desc" title="ENGR MAS K139 OG 237 6 Z063 170">ENGR MAS K139 OG 237 6 Z063 170</td><td class="num">2.999,20</td><td class="num pct">0.6%</td><td class="num cum">29.7%</td></tr><tr><td class="rank">29</td><td class="material">18081001</td><td class="desc" title="REDUTOR EST WG01 90 1 1:60 NCH 80 35">REDUTOR EST WG01 90 1 1:60 NCH 80 35</td><td class="num">2.977,91</td><td class="num pct">0.6%</td><td class="num cum">30.3%</td></tr><tr><td class="rank">30</td><td class="material">16443115</td><td class="desc" title="MOTOR 22kW 4P 180L WFF2">MOTOR 22kW 4P 180L WFF2</td><td class="num">2.914,43</td><td class="num pct">0.6%</td><td class="num cum">30.9%</td></tr><tr><td class="rank">31</td><td class="material">13832699</td><td class="desc" title="PART-PC CARCACA REDUTOR WCG20 F06 B5 BRU">PART-PC CARCACA REDUTOR WCG20 F06 B5 BRU</td><td class="num">2.888,46</td><td class="num pct">0.6%</td><td class="num cum">31.5%</td></tr><tr><td class="rank">32</td><td class="material">18080907</td><td class="desc" title="REDUTOR EST WG01 90 1 1:20 NCJ 90 35">REDUTOR EST WG01 90 1 1:20 NCJ 90 35</td><td class="num">2.881,54</td><td class="num pct">0.6%</td><td class="num cum">32.0%</td></tr><tr><td class="rank">33</td><td class="material">18081000</td><td class="desc" title="REDUTOR EST WG01 90 1 1:60 NCJ 80 35">REDUTOR EST WG01 90 1 1:60 NCJ 80 35</td><td class="num">2.749,91</td><td class="num pct">0.6%</td><td class="num cum">32.6%</td></tr><tr><td class="rank">34</td><td class="material">17155820</td><td class="desc" title="MOTOR 75kW 2P 280S/M WFF2">MOTOR 75kW 2P 280S/M WFF2</td><td class="num">2.734,04</td><td class="num pct">0.5%</td><td class="num cum">33.1%</td></tr><tr><td class="rank">35</td><td class="material">18641595</td><td class="desc" title="EIXO INSERCAO MAS 60X120">EIXO INSERCAO MAS 60X120</td><td class="num">2.599,80</td><td class="num pct">0.5%</td><td class="num cum">33.7%</td></tr><tr><td class="rank">36</td><td class="material">18081085</td><td class="desc" title="REDUTOR EST WG01 110 1 1:30 NCH 132 42">REDUTOR EST WG01 110 1 1:30 NCH 132 42</td><td class="num">2.584,22</td><td class="num pct">0.5%</td><td class="num cum">34.2%</td></tr><tr><td class="rank">37</td><td class="material">18081004</td><td class="desc" title="REDUTOR EST WG01 90 1 1:80 NCJ 80 35">REDUTOR EST WG01 90 1 1:80 NCJ 80 35</td><td class="num">2.525,57</td><td class="num pct">0.5%</td><td class="num cum">34.7%</td></tr><tr><td class="rank">38</td><td class="material">15132814</td><td class="desc" title="EIXO ADAPT ENTRADA MAS SERVO 180">EIXO ADAPT ENTRADA MAS SERVO 180</td><td class="num">2.460,41</td><td class="num pct">0.5%</td><td class="num cum">35.2%</td></tr><tr><td class="rank">39</td><td class="material">16946700</td><td class="desc" title="MOTOR 5.5kW 4P L132M WAF1 MOTOR MODU">MOTOR 5.5kW 4P L132M WAF1 MOTOR MODU</td><td class="num">2.429,96</td><td class="num pct">0.5%</td><td class="num cum">35.7%</td></tr><tr><td class="rank">40</td><td class="material">17086847</td><td class="desc" title="MOTOR 22kW 4P 200L WFF2">MOTOR 22kW 4P 200L WFF2</td><td class="num">2.301,14</td><td class="num pct">0.5%</td><td class="num cum">36.1%</td></tr><tr><td class="rank">41</td><td class="material">15165020</td><td class="desc" title="BARRA RED 1.1191 C45E 58mmh9">BARRA RED 1.1191 C45E 58mmh9</td><td class="num">2.251,36</td><td class="num pct">0.5%</td><td class="num cum">36.6%</td></tr><tr><td class="rank">42</td><td class="material">15113454</td><td class="desc" title="PAR CONICO MAS C130, K136 3,18">PAR CONICO MAS C130, K136 3,18</td><td class="num">2.235,78</td><td class="num pct">0.4%</td><td class="num cum">37.0%</td></tr><tr><td class="rank">43</td><td class="material">18349707</td><td class="desc" title="ENGR MAS K86 114">ENGR MAS K86 114</td><td class="num">2.200,50</td><td class="num pct">0.4%</td><td class="num cum">37.5%</td></tr><tr><td class="rank">44</td><td class="material">16372297</td><td class="desc" title="PART-PC EIXO PINHAO WCG20 K15 Z23">PART-PC EIXO PINHAO WCG20 K15 Z23</td><td class="num">2.161,34</td><td class="num pct">0.4%</td><td class="num cum">37.9%</td></tr><tr><td class="rank">45</td><td class="material">15162282</td><td class="desc" title="MOTOR 45kW 4P 225S/M WFF2">MOTOR 45kW 4P 225S/M WFF2</td><td class="num">2.152,61</td><td class="num pct">0.4%</td><td class="num cum">38.3%</td></tr><tr><td class="rank">46</td><td class="material">15143429</td><td class="desc" title="EIXO SAIDA MAS OS F85 50X248">EIXO SAIDA MAS OS F85 50X248</td><td class="num">2.151,00</td><td class="num pct">0.4%</td><td class="num cum">38.8%</td></tr><tr><td class="rank">47</td><td class="material">18798686</td><td class="desc" title="PART-PC EIXO SAIDA WCG20 F08/V08, K08/N0">PART-PC EIXO SAIDA WCG20 F08/V08, K08/N0</td><td class="num">2.133,53</td><td class="num pct">0.4%</td><td class="num cum">39.2%</td></tr><tr><td class="rank">48</td><td class="material">14030479</td><td class="desc" title="CARCACA WCG20 V04 B35 BASE">CARCACA WCG20 V04 B35 BASE</td><td class="num">2.130,60</td><td class="num pct">0.4%</td><td class="num cum">39.6%</td></tr><tr><td class="rank">49</td><td class="material">15164948</td><td class="desc" title="BARRA RED 1.7131 16MnCr5 52mmh9">BARRA RED 1.7131 16MnCr5 52mmh9</td><td class="num">2.036,78</td><td class="num pct">0.4%</td><td class="num cum">40.0%</td></tr><tr><td class="rank">50</td><td class="material">18348427</td><td class="desc" title="ENGR MAS A86, F85 99">ENGR MAS A86, F85 99</td><td class="num">2.026,50</td><td class="num pct">0.4%</td><td class="num cum">40.4%</td></tr></tbody>
+          </table>
+        </div>
+        
+        <div class="top-pane" data-toptab="provision_eom">
+          <div class="top-meta">
+            <span class="top-meta-label">EUR · projected end of month</span>
+            <span class="top-meta-value"><strong>50</strong> materials make <strong>40%</strong> of the total (201.378,75 of 498.035,39 EUR)</span>
+          </div>
+          <table class="top-table">
+            <thead>
+              <tr>
+                <th class="rank">#</th>
+                <th>Material</th>
+                <th>Description</th>
+                <th class="num">Value (EUR)</th>
+                <th class="num">% Total</th>
+                <th class="num">Cumulative %</th>
+              </tr>
+            </thead>
+            <tbody><tr><td class="rank">1</td><td class="material">18691551</td><td class="desc" title="MOTOR 355kW 4P 355A/B WFF2">MOTOR 355kW 4P 355A/B WFF2</td><td class="num">23.553,85</td><td class="num pct">4.7%</td><td class="num cum">4.7%</td></tr><tr><td class="rank">2</td><td class="material">18691552</td><td class="desc" title="MOTOR 315kW 6P 355A/B WFF2">MOTOR 315kW 6P 355A/B WFF2</td><td class="num">13.497,88</td><td class="num pct">2.7%</td><td class="num cum">7.4%</td></tr><tr><td class="rank">3</td><td class="material">17206362</td><td class="desc" title="MOTOR 75kW 4P 280S/M WFF2">MOTOR 75kW 4P 280S/M WFF2</td><td class="num">6.196,82</td><td class="num pct">1.2%</td><td class="num cum">8.7%</td></tr><tr><td class="rank">4</td><td class="material">14585850</td><td class="desc" title="MOTOR 75kW 4P 250S/M WFF2">MOTOR 75kW 4P 250S/M WFF2</td><td class="num">6.028,65</td><td class="num pct">1.2%</td><td class="num cum">9.9%</td></tr><tr><td class="rank">5</td><td class="material">17530343</td><td class="desc" title="MOTOR 75kW 4P 280S/M WFF2 MOTOFR W22">MOTOR 75kW 4P 280S/M WFF2 MOTOFR W22</td><td class="num">5.855,38</td><td class="num pct">1.2%</td><td class="num cum">11.1%</td></tr><tr><td class="rank">6</td><td class="material">17162801</td><td class="desc" title="PART-PC CESTARI CARCACA C00 GEAR BOX">PART-PC CESTARI CARCACA C00 GEAR BOX</td><td class="num">5.620,88</td><td class="num pct">1.1%</td><td class="num cum">12.2%</td></tr><tr><td class="rank">7</td><td class="material">17007118</td><td class="desc" title="PART-PC TAMPA CARCACA MAS H130 C160 BRUT">PART-PC TAMPA CARCACA MAS H130 C160 BRUT</td><td class="num">5.583,38</td><td class="num pct">1.1%</td><td class="num cum">13.3%</td></tr><tr><td class="rank">8</td><td class="material">17162802</td><td class="desc" title="PART-PC CESTARI CARCACA C00 GEAR BOX">PART-PC CESTARI CARCACA C00 GEAR BOX</td><td class="num">5.510,80</td><td class="num pct">1.1%</td><td class="num cum">14.4%</td></tr><tr><td class="rank">9</td><td class="material">17717374</td><td class="desc" title="PART-PC EIXO SAIDA WCG20 S07 50X100">PART-PC EIXO SAIDA WCG20 S07 50X100</td><td class="num">5.301,04</td><td class="num pct">1.1%</td><td class="num cum">15.5%</td></tr><tr><td class="rank">10</td><td class="material">16950489</td><td class="desc" title="MOTOR 112 4kW 4P W21 S">MOTOR 112 4kW 4P W21 S</td><td class="num">5.210,25</td><td class="num pct">1.0%</td><td class="num cum">16.5%</td></tr><tr><td class="rank">11</td><td class="material">16833382</td><td class="desc" title="MOTOR 3F 800W 230/400V 50Hz 4P">MOTOR 3F 800W 230/400V 50Hz 4P</td><td class="num">5.040,26</td><td class="num pct">1.0%</td><td class="num cum">17.5%</td></tr><tr><td class="rank">12</td><td class="material">13834861</td><td class="desc" title="PART-PC FLANGE SAIDA WCG20 F10 F450 BRUT">PART-PC FLANGE SAIDA WCG20 F10 F450 BRUT</td><td class="num">4.867,00</td><td class="num pct">1.0%</td><td class="num cum">18.5%</td></tr><tr><td class="rank">13</td><td class="material">14694522</td><td class="desc" title="MOTOR 0.75kW 4P 80 WAF1 MOTOR MODU">MOTOR 0.75kW 4P 80 WAF1 MOTOR MODU</td><td class="num">4.572,04</td><td class="num pct">0.9%</td><td class="num cum">19.4%</td></tr><tr><td class="rank">14</td><td class="material">12664126</td><td class="desc" title="MOTOR 30kW 4P 200M/L WAF1 MOTOR MODU">MOTOR 30kW 4P 200M/L WAF1 MOTOR MODU</td><td class="num">4.414,46</td><td class="num pct">0.9%</td><td class="num cum">20.3%</td></tr><tr><td class="rank">15</td><td class="material">13840542</td><td class="desc" title="PART-PC CARCACA REDUTOR WCG20 K15/N15 B3">PART-PC CARCACA REDUTOR WCG20 K15/N15 B3</td><td class="num">3.865,66</td><td class="num pct">0.8%</td><td class="num cum">21.1%</td></tr><tr><td class="rank">16</td><td class="material">17086766</td><td class="desc" title="MOTOR 15kW 4P 180M WFF2">MOTOR 15kW 4P 180M WFF2</td><td class="num">3.779,05</td><td class="num pct">0.8%</td><td class="num cum">21.9%</td></tr><tr><td class="rank">17</td><td class="material">18080961</td><td class="desc" title="REDUTOR EST WG01 90 1 1:40 NCH 80 35">REDUTOR EST WG01 90 1 1:40 NCH 80 35</td><td class="num">3.715,67</td><td class="num pct">0.7%</td><td class="num cum">22.6%</td></tr><tr><td class="rank">18</td><td class="material">18080960</td><td class="desc" title="REDUTOR EST WG01 90 1 1:40 NCJ 80 35">REDUTOR EST WG01 90 1 1:40 NCJ 80 35</td><td class="num">3.713,22</td><td class="num pct">0.7%</td><td class="num cum">23.4%</td></tr><tr><td class="rank">19</td><td class="material">15761531</td><td class="desc" title="ASSENTO MANCAL MAS K80">ASSENTO MANCAL MAS K80</td><td class="num">3.682,82</td><td class="num pct">0.7%</td><td class="num cum">24.1%</td></tr><tr><td class="rank">20</td><td class="material">13840506</td><td class="desc" title="PART-PC CARCACA REDUTOR WCG20 K12/N12 B3">PART-PC CARCACA REDUTOR WCG20 K12/N12 B3</td><td class="num">3.489,30</td><td class="num pct">0.7%</td><td class="num cum">24.8%</td></tr><tr><td class="rank">21</td><td class="material">15133325</td><td class="desc" title="CARCACA MAS TAM 13 BRU">CARCACA MAS TAM 13 BRU</td><td class="num">3.078,74</td><td class="num pct">0.6%</td><td class="num cum">25.4%</td></tr><tr><td class="rank">22</td><td class="material">16050923</td><td class="desc" title="BARRA RED ASTM 17-4 PH 31mm">BARRA RED ASTM 17-4 PH 31mm</td><td class="num">3.067,05</td><td class="num pct">0.6%</td><td class="num cum">26.0%</td></tr><tr><td class="rank">23</td><td class="material">15133430</td><td class="desc" title="CARCACA MAS H136 B35">CARCACA MAS H136 B35</td><td class="num">3.055,06</td><td class="num pct">0.6%</td><td class="num cum">26.6%</td></tr><tr><td class="rank">24</td><td class="material">18080937</td><td class="desc" title="REDUTOR EST WG01 90 1 1:30 NCH 90 35">REDUTOR EST WG01 90 1 1:30 NCH 90 35</td><td class="num">3.053,30</td><td class="num pct">0.6%</td><td class="num cum">27.3%</td></tr><tr><td class="rank">25</td><td class="material">18080967</td><td class="desc" title="REDUTOR EST WG01 90 1 1:50 NCH 80 35">REDUTOR EST WG01 90 1 1:50 NCH 80 35</td><td class="num">3.041,72</td><td class="num pct">0.6%</td><td class="num cum">27.9%</td></tr><tr><td class="rank">26</td><td class="material">15133398</td><td class="desc" title="CARCACA MAS K85 B35">CARCACA MAS K85 B35</td><td class="num">3.039,01</td><td class="num pct">0.6%</td><td class="num cum">28.5%</td></tr><tr><td class="rank">27</td><td class="material">13957594</td><td class="desc" title="MOTOR 18kW 2P 132M WFF2">MOTOR 18kW 2P 132M WFF2</td><td class="num">3.018,90</td><td class="num pct">0.6%</td><td class="num cum">29.1%</td></tr><tr><td class="rank">28</td><td class="material">15076905</td><td class="desc" title="ENGR MAS K139 OG 237 6 Z063 170">ENGR MAS K139 OG 237 6 Z063 170</td><td class="num">2.999,20</td><td class="num pct">0.6%</td><td class="num cum">29.7%</td></tr><tr><td class="rank">29</td><td class="material">18081001</td><td class="desc" title="REDUTOR EST WG01 90 1 1:60 NCH 80 35">REDUTOR EST WG01 90 1 1:60 NCH 80 35</td><td class="num">2.977,91</td><td class="num pct">0.6%</td><td class="num cum">30.3%</td></tr><tr><td class="rank">30</td><td class="material">16443115</td><td class="desc" title="MOTOR 22kW 4P 180L WFF2">MOTOR 22kW 4P 180L WFF2</td><td class="num">2.914,43</td><td class="num pct">0.6%</td><td class="num cum">30.9%</td></tr><tr><td class="rank">31</td><td class="material">13832699</td><td class="desc" title="PART-PC CARCACA REDUTOR WCG20 F06 B5 BRU">PART-PC CARCACA REDUTOR WCG20 F06 B5 BRU</td><td class="num">2.888,46</td><td class="num pct">0.6%</td><td class="num cum">31.5%</td></tr><tr><td class="rank">32</td><td class="material">18080907</td><td class="desc" title="REDUTOR EST WG01 90 1 1:20 NCJ 90 35">REDUTOR EST WG01 90 1 1:20 NCJ 90 35</td><td class="num">2.881,54</td><td class="num pct">0.6%</td><td class="num cum">32.0%</td></tr><tr><td class="rank">33</td><td class="material">18081000</td><td class="desc" title="REDUTOR EST WG01 90 1 1:60 NCJ 80 35">REDUTOR EST WG01 90 1 1:60 NCJ 80 35</td><td class="num">2.749,91</td><td class="num pct">0.6%</td><td class="num cum">32.6%</td></tr><tr><td class="rank">34</td><td class="material">17155820</td><td class="desc" title="MOTOR 75kW 2P 280S/M WFF2">MOTOR 75kW 2P 280S/M WFF2</td><td class="num">2.734,04</td><td class="num pct">0.5%</td><td class="num cum">33.1%</td></tr><tr><td class="rank">35</td><td class="material">18641595</td><td class="desc" title="EIXO INSERCAO MAS 60X120">EIXO INSERCAO MAS 60X120</td><td class="num">2.599,80</td><td class="num pct">0.5%</td><td class="num cum">33.7%</td></tr><tr><td class="rank">36</td><td class="material">18081085</td><td class="desc" title="REDUTOR EST WG01 110 1 1:30 NCH 132 42">REDUTOR EST WG01 110 1 1:30 NCH 132 42</td><td class="num">2.584,22</td><td class="num pct">0.5%</td><td class="num cum">34.2%</td></tr><tr><td class="rank">37</td><td class="material">18081004</td><td class="desc" title="REDUTOR EST WG01 90 1 1:80 NCJ 80 35">REDUTOR EST WG01 90 1 1:80 NCJ 80 35</td><td class="num">2.525,57</td><td class="num pct">0.5%</td><td class="num cum">34.7%</td></tr><tr><td class="rank">38</td><td class="material">15132814</td><td class="desc" title="EIXO ADAPT ENTRADA MAS SERVO 180">EIXO ADAPT ENTRADA MAS SERVO 180</td><td class="num">2.460,41</td><td class="num pct">0.5%</td><td class="num cum">35.2%</td></tr><tr><td class="rank">39</td><td class="material">16946700</td><td class="desc" title="MOTOR 5.5kW 4P L132M WAF1 MOTOR MODU">MOTOR 5.5kW 4P L132M WAF1 MOTOR MODU</td><td class="num">2.429,96</td><td class="num pct">0.5%</td><td class="num cum">35.7%</td></tr><tr><td class="rank">40</td><td class="material">17086847</td><td class="desc" title="MOTOR 22kW 4P 200L WFF2">MOTOR 22kW 4P 200L WFF2</td><td class="num">2.301,14</td><td class="num pct">0.5%</td><td class="num cum">36.1%</td></tr><tr><td class="rank">41</td><td class="material">15165020</td><td class="desc" title="BARRA RED 1.1191 C45E 58mmh9">BARRA RED 1.1191 C45E 58mmh9</td><td class="num">2.251,36</td><td class="num pct">0.5%</td><td class="num cum">36.6%</td></tr><tr><td class="rank">42</td><td class="material">15113454</td><td class="desc" title="PAR CONICO MAS C130, K136 3,18">PAR CONICO MAS C130, K136 3,18</td><td class="num">2.235,78</td><td class="num pct">0.4%</td><td class="num cum">37.0%</td></tr><tr><td class="rank">43</td><td class="material">18349707</td><td class="desc" title="ENGR MAS K86 114">ENGR MAS K86 114</td><td class="num">2.200,50</td><td class="num pct">0.4%</td><td class="num cum">37.5%</td></tr><tr><td class="rank">44</td><td class="material">16372297</td><td class="desc" title="PART-PC EIXO PINHAO WCG20 K15 Z23">PART-PC EIXO PINHAO WCG20 K15 Z23</td><td class="num">2.161,34</td><td class="num pct">0.4%</td><td class="num cum">37.9%</td></tr><tr><td class="rank">45</td><td class="material">15162282</td><td class="desc" title="MOTOR 45kW 4P 225S/M WFF2">MOTOR 45kW 4P 225S/M WFF2</td><td class="num">2.152,61</td><td class="num pct">0.4%</td><td class="num cum">38.3%</td></tr><tr><td class="rank">46</td><td class="material">15143429</td><td class="desc" title="EIXO SAIDA MAS OS F85 50X248">EIXO SAIDA MAS OS F85 50X248</td><td class="num">2.151,00</td><td class="num pct">0.4%</td><td class="num cum">38.8%</td></tr><tr><td class="rank">47</td><td class="material">18798686</td><td class="desc" title="PART-PC EIXO SAIDA WCG20 F08/V08, K08/N0">PART-PC EIXO SAIDA WCG20 F08/V08, K08/N0</td><td class="num">2.133,53</td><td class="num pct">0.4%</td><td class="num cum">39.2%</td></tr><tr><td class="rank">48</td><td class="material">14030479</td><td class="desc" title="CARCACA WCG20 V04 B35 BASE">CARCACA WCG20 V04 B35 BASE</td><td class="num">2.130,60</td><td class="num pct">0.4%</td><td class="num cum">39.6%</td></tr><tr><td class="rank">49</td><td class="material">15164948</td><td class="desc" title="BARRA RED 1.7131 16MnCr5 52mmh9">BARRA RED 1.7131 16MnCr5 52mmh9</td><td class="num">2.036,78</td><td class="num pct">0.4%</td><td class="num cum">40.0%</td></tr><tr><td class="rank">50</td><td class="material">18348427</td><td class="desc" title="ENGR MAS A86, F85 99">ENGR MAS A86, F85 99</td><td class="num">2.026,50</td><td class="num pct">0.4%</td><td class="num cum">40.4%</td></tr></tbody>
+          </table>
+        </div>
+        
+    </div>
+    
+    <script>
+    (function() {
+      const btns = document.querySelectorAll('.top-tab-btn');
+      const panes = document.querySelectorAll('.top-pane');
+      btns.forEach(b => b.addEventListener('click', () => {
+        const k = b.dataset.toptab;
+        btns.forEach(x => x.classList.toggle('active', x.dataset.toptab === k));
+        panes.forEach(x => x.classList.toggle('active', x.dataset.toptab === k));
+      }));
+    })();
+    </script>
+    
 
   <div class="section-header">Definitions</div>
 
