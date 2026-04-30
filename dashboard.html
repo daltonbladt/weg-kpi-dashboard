@@ -1,0 +1,1518 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>WEG Gear Systems — KPI Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+
+  :root {
+    --weg-blue:    #00579E;
+    --weg-blue-dk: #003E73;
+    --weg-blue-lt: #E5EFF7;
+    --bg:          #F4F6F8;
+    --panel:       #FFFFFF;
+    --ink:         #2C3E50;
+    --ink-soft:    #5A6878;
+    --muted:       #8A98A8;
+    --rule:        #E1E6EB;
+    --rule-soft:   #EEF1F4;
+    --shadow-sm:   0 1px 2px rgba(44, 62, 80, 0.06);
+    --shadow-md:   0 4px 12px rgba(44, 62, 80, 0.10);
+    --topbar-h:    64px;
+  }
+
+  * {{ box-sizing: border-box; }}
+  html, body {{
+    margin: 0;
+    padding-top: var(--topbar-h);
+    background: var(--bg);
+    font-family: 'Open Sans', sans-serif;
+    -webkit-font-smoothing: antialiased;
+    color: var(--ink);
+    font-size: 14px;
+  }}
+
+  /* Top bar */
+  .topbar {{
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: var(--topbar-h);
+    background: var(--panel);
+    border-bottom: 1px solid var(--rule);
+    box-shadow: var(--shadow-sm);
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    padding: 0 24px;
+    z-index: 100;
+  }}
+
+  .logo {{ height: 38px; flex-shrink: 0; }}
+  .brand {{ display: flex; flex-direction: column; line-height: 1.15; gap: 2px; }}
+  .brand-name {{ color: var(--weg-blue); font-weight: 700; font-size: 18px; letter-spacing: -0.2px; }}
+  .brand-section {{ color: var(--ink-soft); font-weight: 600; font-size: 11px; letter-spacing: 0.5px; text-transform: uppercase; }}
+  .topbar-meta {{ margin-left: auto; display: flex; gap: 18px; align-items: center; font-size: 12px; color: var(--ink-soft); }}
+  .topbar-meta .pill {{ background: var(--weg-blue-lt); color: var(--weg-blue); padding: 4px 12px; border-radius: 4px; font-weight: 600; }}
+
+  /* Tabs */
+  .tabs {{
+    position: fixed;
+    top: var(--topbar-h);
+    left: 0;
+    right: 0;
+    height: 48px;
+    background: var(--panel);
+    border-bottom: 1px solid var(--rule);
+    display: flex;
+    gap: 0;
+    padding: 0 24px;
+    z-index: 99;
+  }}
+
+  body {{ padding-top: calc(var(--topbar-h) + 48px); }}
+
+  .tab-btn {{
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 0 18px;
+    height: 48px;
+    color: var(--ink-soft);
+    font-weight: 600;
+    font-size: 13px;
+    border: none;
+    border-bottom: 3px solid transparent;
+    background: none;
+    cursor: pointer;
+    transition: all 0.12s ease;
+    white-space: nowrap;
+  }}
+
+  .tab-btn:hover {{ color: var(--weg-blue); background: var(--weg-blue-lt); }}
+  .tab-btn.active {{ color: var(--weg-blue); border-bottom-color: var(--weg-blue); }}
+
+  /* Tabs content */
+  .tab-content {{
+    display: none;
+    overflow-y: auto;
+  }}
+
+  .tab-content.active {{ display: block; }}
+
+  /* Landing */
+  .overview {{
+    padding: 32px 36px 48px;
+  }}
+
+  .overview h1 {{
+    font-size: 26px;
+    font-weight: 700;
+    color: var(--weg-blue);
+    margin: 0 0 6px;
+    letter-spacing: -0.3px;
+  }}
+
+  .overview .subtitle {{
+    color: var(--ink-soft);
+    font-size: 14px;
+    margin-bottom: 28px;
+  }}
+
+  .kpi-strip {{
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 14px;
+    margin-bottom: 32px;
+  }}
+
+  .kpi-mini {{
+    background: var(--panel);
+    border: 1px solid var(--rule);
+    border-radius: 6px;
+    padding: 14px 18px;
+    box-shadow: var(--shadow-sm);
+  }}
+
+  .kpi-mini .label {{
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    color: var(--muted);
+    margin-bottom: 6px;
+  }}
+
+  .kpi-mini .value {{
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--ink);
+    letter-spacing: -0.3px;
+    line-height: 1.1;
+  }}
+
+  .kpi-mini .currency {{
+    font-size: 11px;
+    color: var(--muted);
+    margin-right: 4px;
+    font-weight: 600;
+  }}
+
+  .kpi-mini .pct {{
+    font-size: 13px;
+    color: var(--ink-soft);
+    margin-left: 6px;
+    font-weight: 600;
+  }}
+
+  .section-title {{
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.7px;
+    color: var(--ink-soft);
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }}
+
+  .section-title::before {{
+    content: '';
+    width: 4px;
+    height: 16px;
+    background: var(--weg-blue);
+    border-radius: 2px;
+  }}
+
+  .tiles {{
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 18px;
+    max-width: 900px;
+  }}
+
+  .tile {{
+    background: var(--panel);
+    border: 1px solid var(--rule);
+    border-radius: 8px;
+    padding: 24px;
+    cursor: pointer;
+    user-select: none;
+    box-shadow: var(--shadow-sm);
+    transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+    display: flex;
+    align-items: flex-start;
+    gap: 18px;
+  }}
+
+  .tile:hover {{
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+    border-color: var(--weg-blue-lt);
+  }}
+
+  .tile-icon {{
+    width: 56px;
+    height: 56px;
+    border-radius: 10px;
+    background: var(--weg-blue-lt);
+    color: var(--weg-blue);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 28px;
+    flex-shrink: 0;
+  }}
+
+  .tile-content {{ flex: 1; }}
+
+  .tile h3 {{
+    margin: 0 0 6px;
+    font-size: 17px;
+    font-weight: 700;
+    color: var(--weg-blue);
+    letter-spacing: -0.2px;
+  }}
+
+  .tile p {{
+    margin: 0;
+    color: var(--ink-soft);
+    font-size: 13px;
+    line-height: 1.5;
+  }}
+
+  .tile-meta {{
+    margin-top: 10px;
+    font-size: 11px;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    font-weight: 600;
+  }}
+
+  .footer-meta {{
+    margin-top: 32px;
+    padding-top: 16px;
+    border-top: 1px solid var(--rule);
+    font-size: 11px;
+    color: var(--muted);
+    letter-spacing: 0.4px;
+    text-transform: uppercase;
+  }}
+
+
+  :root {
+    --weg-blue:    #00579E;
+    --weg-blue-dk: #003E73;
+    --weg-blue-lt: #E5EFF7;
+
+    --bg:          #F4F6F8;
+    --panel:       #FFFFFF;
+    --ink:         #2C3E50;
+    --ink-soft:    #5A6878;
+    --muted:       #8A98A8;
+    --rule:        #E1E6EB;
+    --rule-soft:   #EEF1F4;
+
+    --ok:          #27AE60;
+    --warn:        #F39C12;
+    --crit:        #E74C3C;
+
+    --shadow-sm:   0 1px 2px rgba(44, 62, 80, 0.06);
+  }
+
+  * { box-sizing: border-box; }
+
+  html, body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: 'Open Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-size: 14px;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ─── Top bar ──────────────────────────────────────────────── */
+  .topbar {
+    background: var(--panel);
+    border-bottom: 1px solid var(--rule);
+    box-shadow: var(--shadow-sm);
+    padding: 16px 28px;
+    display: flex;
+    align-items: center;
+    gap: 22px;
+  }
+  .topbar-logo {
+    height: 48px;
+    width: auto;
+    flex-shrink: 0;
+    display: block;
+  }
+  .topbar-brand {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.1;
+    gap: 4px;
+  }
+  .brand-name {
+    color: var(--weg-blue);
+    font-weight: 700;
+    font-size: 22px;
+    letter-spacing: -0.2px;
+  }
+  .brand-section {
+    color: var(--ink-soft);
+    font-weight: 600;
+    font-size: 13px;
+    letter-spacing: 0.4px;
+    text-transform: uppercase;
+  }
+  .topbar-meta {
+    margin-left: auto;
+    display: flex;
+    gap: 18px;
+    align-items: center;
+    font-size: 12px;
+    color: var(--ink-soft);
+  }
+  .topbar-meta .pill {
+    background: var(--weg-blue-lt);
+    color: var(--weg-blue);
+    padding: 4px 12px;
+    border-radius: 4px;
+    font-weight: 600;
+  }
+  .version { color: var(--muted); font-size: 11px; }
+
+  /* ─── Page ─────────────────────────────────────────────────── */
+  .page {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 24px 28px 48px;
+  }
+
+  /* ─── Section header ───────────────────────────────────────── */
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 8px 0 14px;
+    color: var(--weg-blue);
+    font-weight: 700;
+    font-size: 13px;
+    letter-spacing: 0.6px;
+    text-transform: uppercase;
+  }
+  .section-header::before {
+    content: '';
+    width: 4px;
+    height: 16px;
+    background: var(--weg-blue);
+    border-radius: 2px;
+  }
+
+  /* ─── KPI cards row ────────────────────────────────────────── */
+  .kpi-row {
+    display: grid;
+    grid-template-columns: 1.2fr repeat(4, 1fr);
+    gap: 14px;
+    margin-bottom: 32px;
+  }
+  @media (max-width: 1180px) {
+    .kpi-row { grid-template-columns: 1fr 1fr 1fr; }
+  }
+  @media (max-width: 760px) {
+    .kpi-row { grid-template-columns: 1fr; }
+  }
+
+  .kpi-card {
+    background: var(--panel);
+    border: 1px solid var(--rule);
+    border-radius: 6px;
+    padding: 16px 18px;
+    box-shadow: var(--shadow-sm);
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    min-height: 175px;
+  }
+  .kpi-card.headline {
+    background: linear-gradient(135deg, var(--weg-blue) 0%, var(--weg-blue-dk) 100%);
+    color: #fff;
+    border: none;
+  }
+
+  .kpi-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .kpi-label {
+    font-size: 10.5px;
+    text-transform: uppercase;
+    letter-spacing: 0.7px;
+    font-weight: 700;
+    color: var(--ink-soft);
+    line-height: 1.35;
+  }
+  .kpi-card.headline .kpi-label {
+    color: rgba(255,255,255,0.85);
+  }
+
+  .kpi-badge {
+    font-size: 9.5px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.7px;
+    padding: 3px 7px;
+    border-radius: 3px;
+    white-space: nowrap;
+  }
+  .kpi-badge.ok   { background: #E8F8EF; color: var(--ok); }
+  .kpi-badge.warn { background: #FEF4E1; color: var(--warn); }
+  .kpi-badge.crit { background: #FCEAE7; color: var(--crit); }
+
+  .kpi-value {
+    font-size: 22px;
+    font-weight: 700;
+    line-height: 1.05;
+    letter-spacing: -0.4px;
+    color: var(--weg-blue);
+  }
+  .kpi-card.headline .kpi-value {
+    color: #fff;
+    font-size: 26px;
+  }
+  .kpi-value .currency {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--muted);
+    margin-right: 5px;
+    vertical-align: 0.25em;
+  }
+  .kpi-card.headline .kpi-value .currency {
+    color: rgba(255,255,255,0.7);
+  }
+
+  .kpi-pct {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--ink);
+    margin-left: 6px;
+  }
+
+  /* Progress bar */
+  .progress {
+    height: 5px;
+    background: var(--rule-soft);
+    border-radius: 3px;
+    overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%;
+    border-radius: 3px;
+  }
+  .progress-fill.ok   { background: var(--ok); }
+  .progress-fill.warn { background: var(--warn); }
+  .progress-fill.crit { background: var(--crit); }
+
+  .kpi-foot {
+    margin-top: auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 11.5px;
+    color: var(--ink-soft);
+    padding-top: 8px;
+    border-top: 1px solid var(--rule-soft);
+  }
+  .kpi-card.headline .kpi-foot {
+    color: rgba(255,255,255,0.85);
+    border-top-color: rgba(255,255,255,0.2);
+  }
+
+  /* ─── Charts ───────────────────────────────────────────────── */
+  .chart-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 32px;
+  }
+  @media (max-width: 980px) {
+    .chart-row { grid-template-columns: 1fr; }
+  }
+  .chart-card {
+    background: var(--panel);
+    border: 1px solid var(--rule);
+    border-radius: 6px;
+    box-shadow: var(--shadow-sm);
+    overflow: hidden;
+  }
+  .chart-head {
+    padding: 12px 18px;
+    border-bottom: 1px solid var(--rule);
+    background: #FAFBFC;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .chart-title {
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    color: var(--ink-soft);
+  }
+  .chart-sub {
+    font-size: 11px;
+    color: var(--muted);
+  }
+  .chart-body { padding: 8px 12px 12px; }
+  .chart-body svg { width: 100%; height: auto; display: block; }
+
+  .chart-empty {
+    padding: 40px 20px;
+    text-align: center;
+    color: var(--muted);
+    font-style: italic;
+    font-size: 13px;
+  }
+
+  .chart-body .grid    { stroke: var(--rule-soft); stroke-width: 1; }
+  .chart-body .axis    { font-family: 'Open Sans', sans-serif; font-size: 11px; font-weight: 600; fill: var(--ink); }
+  .chart-body .axis.y  { text-anchor: end; }
+  .chart-body .value   { font-family: 'Open Sans', sans-serif; font-size: 11px; font-weight: 700; }
+
+  /* ─── Definitions panel ───────────────────────────────────── */
+  .panel {
+    background: var(--panel);
+    border: 1px solid var(--rule);
+    border-radius: 6px;
+    box-shadow: var(--shadow-sm);
+    overflow: hidden;
+  }
+  .panel-head {
+    padding: 12px 20px;
+    border-bottom: 1px solid var(--rule);
+    background: #FAFBFC;
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    color: var(--ink-soft);
+  }
+  .panel-body { padding: 4px 0; }
+
+  .definition {
+    display: grid;
+    grid-template-columns: 240px 1fr;
+    gap: 24px;
+    padding: 12px 20px;
+    border-bottom: 1px solid var(--rule-soft);
+  }
+  .definition:last-child { border-bottom: none; }
+  .definition dt {
+    color: var(--weg-blue);
+    font-weight: 600;
+    font-size: 13px;
+  }
+  .definition dd {
+    margin: 0;
+    color: var(--ink-soft);
+    font-size: 13px;
+    line-height: 1.55;
+  }
+  .definition dd code {
+    background: var(--weg-blue-lt);
+    color: var(--weg-blue);
+    padding: 1px 6px;
+    border-radius: 3px;
+    font-size: 12px;
+    font-family: 'Consolas', 'Monaco', monospace;
+  }
+  .bands {
+    display: inline-flex;
+    gap: 6px;
+    margin-top: 4px;
+    flex-wrap: wrap;
+  }
+  .band {
+    background: var(--bg);
+    padding: 1px 8px;
+    border-radius: 3px;
+    font-size: 12px;
+    font-family: 'Consolas', 'Monaco', monospace;
+    border: 1px solid var(--rule);
+  }
+  .band b { color: var(--weg-blue); }
+
+  /* ─── Footer ───────────────────────────────────────────────── */
+  footer {
+    margin-top: 28px;
+    padding-top: 16px;
+    border-top: 1px solid var(--rule);
+    display: flex;
+    justify-content: space-between;
+    font-size: 11px;
+    color: var(--muted);
+    letter-spacing: 0.4px;
+    text-transform: uppercase;
+  }
+
+  @media print {
+    body { background: #fff; }
+    .topbar, .kpi-card, .panel, .chart-card { box-shadow: none; }
+  }
+
+
+  :root {
+    --weg-blue:    #00579E;
+    --weg-blue-dk: #003E73;
+    --weg-blue-lt: #E5EFF7;
+    --bg:          #F4F6F8;
+    --panel:       #FFFFFF;
+    --ink:         #2C3E50;
+    --ink-soft:    #5A6878;
+    --muted:       #8A98A8;
+    --rule:        #E1E6EB;
+    --rule-soft:   #EEF1F4;
+    --shadow-sm:   0 1px 2px rgba(44, 62, 80, 0.06);
+
+    --c-stock:    #2E8AC9;
+    --c-reorder:  #003E73;
+    --c-safety:   #27AE60;
+    --c-smi:      #2C3E50;
+    --c-worst:    #E74C3C;
+    --c-proj:     #E58E26;
+  }
+
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0; background: var(--bg); color: var(--ink);
+    font-family: 'Open Sans', sans-serif; font-size: 14px;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* Top bar */
+  .topbar {
+    background: var(--panel); border-bottom: 1px solid var(--rule);
+    box-shadow: var(--shadow-sm);
+    padding: 16px 28px; display: flex; align-items: center; gap: 22px;
+  }
+  .topbar-logo { height: 48px; width: auto; flex-shrink: 0; display: block; }
+  .topbar-brand { display: flex; flex-direction: column; line-height: 1.1; gap: 4px; }
+  .brand-name { color: var(--weg-blue); font-weight: 700; font-size: 22px; letter-spacing: -0.2px; }
+  .brand-section { color: var(--ink-soft); font-weight: 600; font-size: 13px; letter-spacing: 0.4px; text-transform: uppercase; }
+  .topbar-meta { margin-left: auto; display: flex; gap: 18px; align-items: center; font-size: 12px; color: var(--ink-soft); }
+  .topbar-meta .pill { background: var(--weg-blue-lt); color: var(--weg-blue); padding: 4px 12px; border-radius: 4px; font-weight: 600; }
+  .topbar-back {
+    color: var(--ink-soft); font-size: 13px; text-decoration: none;
+    padding: 6px 12px; border-radius: 4px; border: 1px solid var(--rule);
+  }
+  .topbar-back:hover { background: var(--weg-blue-lt); color: var(--weg-blue); border-color: var(--weg-blue-lt); }
+
+  .page { max-width: 1400px; margin: 0 auto; padding: 24px 28px 48px; }
+
+  /* Area block */
+  .area-block { margin-bottom: 36px; }
+  .area-head { display: flex; align-items: baseline; gap: 14px; margin-bottom: 14px; }
+  .area-rule { width: 4px; height: 22px; background: var(--weg-blue); border-radius: 2px; }
+  .area-head h2 { margin: 0; font-size: 22px; font-weight: 700; color: var(--weg-blue); letter-spacing: -0.2px; }
+  .area-sub { color: var(--muted); font-size: 12px; text-transform: uppercase; letter-spacing: 0.6px; font-weight: 600; }
+
+  .area-body {
+    display: grid; grid-template-columns: 1fr 220px; gap: 16px;
+    background: var(--panel); border: 1px solid var(--rule);
+    border-radius: 6px; box-shadow: var(--shadow-sm);
+    padding: 18px 20px;
+  }
+  @media (max-width: 980px) { .area-body { grid-template-columns: 1fr; } }
+
+  /* Selector */
+  .selector { border-left: 1px solid var(--rule-soft); padding-left: 14px; }
+  .selector-title {
+    font-size: 11px; text-transform: uppercase; letter-spacing: 0.7px;
+    font-weight: 700; color: var(--ink-soft); margin-bottom: 8px;
+  }
+  .check-list { list-style: none; margin: 0; padding: 0; max-height: 320px; overflow-y: auto; }
+  .check-row {
+    display: flex; align-items: center; gap: 8px;
+    padding: 5px 6px; cursor: pointer; border-radius: 3px;
+    font-size: 12.5px;
+  }
+  .check-row:hover { background: var(--weg-blue-lt); }
+  .check-row input { margin: 0; cursor: pointer; }
+  .check-row.select-all {
+    font-weight: 700; color: var(--ink);
+    border-bottom: 1px solid var(--rule-soft);
+    margin-bottom: 4px; padding-bottom: 8px;
+  }
+
+  /* Legend */
+  .legend-row {
+    display: flex; flex-wrap: wrap; gap: 6px 14px; align-items: center;
+    margin-bottom: 8px;
+    font-size: 11.5px; font-weight: 600; color: var(--ink-soft);
+  }
+  .legend-row .lg {
+    display: inline-block; width: 14px; height: 8px; border-radius: 2px;
+    margin-right: 1px; vertical-align: middle;
+  }
+  .lg-stock   { background: var(--c-stock); }
+  .lg-reorder { background: var(--c-reorder); }
+  .lg-safety  { background: var(--c-safety); }
+  .lg-smi     { background: var(--c-smi); }
+  .lg-worst   { background: var(--c-worst); }
+  .lg-proj    { background: repeating-linear-gradient(
+                    to right, var(--c-proj) 0, var(--c-proj) 4px,
+                    transparent 4px, transparent 7px); height: 3px; }
+  .lg-sep     { color: var(--rule); }
+
+  /* Stats row */
+  .chart-stats {
+    display: flex; gap: 22px; margin-bottom: 8px; padding-bottom: 10px;
+    border-bottom: 1px solid var(--rule-soft); flex-wrap: wrap;
+  }
+  .stat { display: flex; flex-direction: column; gap: 2px; min-width: 80px; }
+  .stat-label {
+    font-size: 10px; text-transform: uppercase; letter-spacing: 0.6px;
+    color: var(--muted); font-weight: 700;
+  }
+  .stat-value { font-size: 17px; font-weight: 700; color: var(--ink); letter-spacing: -0.3px; }
+  .stat-value .unit { font-size: 11px; color: var(--muted); font-weight: 600; margin-left: 2px; }
+  .stat.proj .stat-value { color: var(--c-proj); }
+  .stat.worst .stat-value { color: var(--c-worst); }
+
+  /* Chart */
+  .chart-svg { min-height: 300px; }
+  .chart-svg svg { width: 100%; height: auto; display: block; }
+  .chart-svg .grid    { stroke: var(--rule-soft); stroke-width: 1; }
+  .chart-svg .proj-sep { stroke: var(--rule); stroke-width: 1; stroke-dasharray: 2,3; }
+  .chart-svg .axis    { font-family: 'Open Sans', sans-serif; font-size: 11px; font-weight: 600; fill: var(--ink); }
+  .chart-svg .axis.y  { text-anchor: end; }
+  .chart-svg .axis.x.proj { fill: var(--c-proj); font-style: italic; }
+  .chart-svg .value   { font-family: 'Open Sans', sans-serif; font-size: 10px; font-weight: 700; }
+  .chart-svg .smi-row { font-family: 'Open Sans', sans-serif; font-size: 9.5px; fill: var(--c-smi); }
+
+  .chart-footnote {
+    font-size: 11px; color: var(--ink-soft);
+    padding-top: 10px; border-top: 1px solid var(--rule-soft);
+    margin-top: 6px;
+  }
+  .chart-footnote .warn { color: #B94E1F; font-style: italic; }
+
+  .sources {
+    margin-top: 10px; font-size: 11px; color: var(--ink-soft);
+  }
+  .sources strong { color: var(--ink); }
+  .sources .warn { color: #B94E1F; font-style: italic; }
+
+  footer {
+    margin-top: 28px; padding-top: 16px;
+    border-top: 1px solid var(--rule);
+    display: flex; justify-content: space-between;
+    font-size: 11px; color: var(--muted);
+    letter-spacing: 0.4px; text-transform: uppercase;
+  }
+
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <img class="logo" alt="WEG" src="data:image/png;base64,LOGO_PLACEHOLDER">
+  <div class="brand">
+    <span class="brand-name">WEG Gear Systems</span>
+    <span class="brand-section">KPI Dashboard</span>
+  </div>
+  <div class="topbar-meta">
+    <span>Reference date <span class="pill">30/04/2026</span></span>
+    <span>Updated on 30/04/2026 09:08</span>
+  </div>
+</div>
+
+<div class="tabs">
+  <button class="tab-btn active" data-tab="overview">⌂ Overview</button>
+  <button class="tab-btn" data-tab="dashboard">▦ Stock Dashboard</button>
+  <button class="tab-btn" data-tab="history">📈 Stock History and Projection</button>
+</div>
+
+<div class="tab-content active" data-tab="overview">
+  <div class="overview">
+    <h1>Welcome</h1>
+    <p class="subtitle">
+      Stock indicators and forecast for the production areas
+      — Turned Parts, Geared Parts, and Cast Machining.
+    </p>
+
+    <div class="kpi-strip">
+      <div class="kpi-mini">
+        <div class="label">Total stock value</div>
+        <div class="value"><span class="currency">EUR</span>16.650.635,22</div>
+      </div>
+      <div class="kpi-mini">
+        <div class="label">No movement &gt; 180d</div>
+        <div class="value"><span class="currency">EUR</span>1.671.770,69<span class="pct">10,0%</span></div>
+      </div>
+      <div class="kpi-mini">
+        <div class="label">Provision loss now</div>
+        <div class="value"><span class="currency">EUR</span>498.035,38<span class="pct">3,0%</span></div>
+      </div>
+      <div class="kpi-mini">
+        <div class="label">Materials in scope</div>
+        <div class="value">7.285</div>
+      </div>
+    </div>
+
+    <div class="section-title">Reports</div>
+
+    <div class="tiles">
+      <div class="tile" data-go="dashboard">
+        <div class="tile-icon">▦</div>
+        <div class="tile-content">
+          <h3>Stock Dashboard</h3>
+          <p>Five key indicators in EUR — total value, slow-moving inventory,
+             and provision loss now and at end of month, with 12-month history.</p>
+          <div class="tile-meta">5 KPIs · 2 charts · monthly</div>
+        </div>
+      </div>
+      <div class="tile" data-go="history">
+        <div class="tile-icon">📈</div>
+        <div class="tile-content">
+          <h3>Stock History &amp; Prediction</h3>
+          <p>Per area: stock, reorder point, safety stock, SMI quantity,
+             and worst-case projection — with multi-select family filter.</p>
+          <div class="tile-meta">5 series · per family · forecast</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer-meta">
+      EP0 · PPC · WC-AUFTR · Internal use only
+    </div>
+  </div>
+</div>
+
+<div class="tab-content" data-tab="dashboard">
+  <div class="topbar-meta">
+    <span>Reference date <span class="pill">30/04/2026</span></span>
+    <span>Updated on 30/04/2026 09:07</span>
+    <span class="version">v1.1.0</span>
+  </div>
+</div>
+
+<div class="page">
+
+  <div class="section-header">Key Indicators</div>
+
+  <div class="kpi-row">
+
+    <div class="kpi-card headline">
+      <div class="kpi-head">
+        <span class="kpi-label">Total stock value</span>
+      </div>
+      <div class="kpi-value">
+        <span class="currency">EUR</span>16.650.635,22
+      </div>
+      <div class="kpi-foot">
+        <span>7.285 materials</span>
+        <span>Baseline · 100%</span>
+      </div>
+    </div>
+
+    <div class="kpi-card">
+      <div class="kpi-head">
+        <span class="kpi-label">No movement<br>&gt; 180 days</span>
+        <span class="kpi-badge warn">Warning</span>
+      </div>
+      <div class="kpi-value">
+        <span class="currency">EUR</span>1.671.770,69
+        <span class="kpi-pct">10,0%</span>
+      </div>
+      <div class="progress">
+        <div class="progress-fill warn" style="width: 10.040281754487921%"></div>
+      </div>
+      <div class="kpi-foot">
+        <span>1.259 materials</span>
+        <span>now</span>
+      </div>
+    </div>
+
+    <div class="kpi-card">
+      <div class="kpi-head">
+        <span class="kpi-label">No movement<br>EOM projection</span>
+        <span class="kpi-badge warn">+0d</span>
+      </div>
+      <div class="kpi-value">
+        <span class="currency">EUR</span>1.671.770,69
+        <span class="kpi-pct">10,0%</span>
+      </div>
+      <div class="progress">
+        <div class="progress-fill warn" style="width: 10.040281754487921%"></div>
+      </div>
+      <div class="kpi-foot">
+        <span>1.259 materials</span>
+        <span>end of month</span>
+      </div>
+    </div>
+
+    <div class="kpi-card">
+      <div class="kpi-head">
+        <span class="kpi-label">Provision loss<br>current</span>
+        <span class="kpi-badge warn">Warning</span>
+      </div>
+      <div class="kpi-value">
+        <span class="currency">EUR</span>498.035,38
+        <span class="kpi-pct">3,0%</span>
+      </div>
+      <div class="kpi-foot">
+        <span>weighted by age band</span>
+        <span>now</span>
+      </div>
+    </div>
+
+    <div class="kpi-card">
+      <div class="kpi-head">
+        <span class="kpi-label">Provision loss<br>EOM projection</span>
+        <span class="kpi-badge warn">+0d</span>
+      </div>
+      <div class="kpi-value">
+        <span class="currency">EUR</span>498.035,38
+        <span class="kpi-pct">3,0%</span>
+      </div>
+      <div class="kpi-foot">
+        <span>P&amp;L exposure</span>
+        <span>end of month</span>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="section-header">Monthly History · last 12 months</div>
+
+  <div class="chart-row">
+
+    <div class="chart-card">
+      <div class="chart-head">
+        <span class="chart-title">Total stock value</span>
+        <span class="chart-sub">EUR · month-end snapshot</span>
+      </div>
+      <div class="chart-body">
+        <svg viewBox="0 0 760 240" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Total stock value, monthly"><line x1="56" y1="204.0" x2="744" y2="204.0" class="grid"/><text x="48" y="208.0" class="axis y">15,3M</text><line x1="56" y1="159.0" x2="744" y2="159.0" class="grid"/><text x="48" y="163.0" class="axis y">15,9M</text><line x1="56" y1="114.0" x2="744" y2="114.0" class="grid"/><text x="48" y="118.0" class="axis y">16,4M</text><line x1="56" y1="69.0" x2="744" y2="69.0" class="grid"/><text x="48" y="73.0" class="axis y">17,0M</text><line x1="56" y1="24.0" x2="744" y2="24.0" class="grid"/><text x="48" y="28.0" class="axis y">17,6M</text><path d="M 56.0,204.0 56.0,98.0 L 118.5,76.4 L 181.1,91.3 L 243.6,39.0 L 306.2,59.2 L 368.7,123.5 L 431.3,149.0 L 493.8,143.7 L 556.4,176.6 L 618.9,189.0 L 681.5,127.3 L 744.0,96.4 L 744.0,204.0 Z" fill="rgba(0, 87, 158, 0.12)" stroke="none"/><path d="M 56.0,98.0 L 118.5,76.4 L 181.1,91.3 L 243.6,39.0 L 306.2,59.2 L 368.7,123.5 L 431.3,149.0 L 493.8,143.7 L 556.4,176.6 L 618.9,189.0 L 681.5,127.3 L 744.0,96.4" fill="none" stroke="#00579E" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/><circle cx="744.0" cy="96.4" r="4" fill="#fff" stroke="#00579E" stroke-width="2"/><text x="744.0" y="84.4" class="value" text-anchor="middle" fill="#00579E">16,7M</text><text x="56.0" y="222.0" class="axis x" text-anchor="middle">May/25</text><text x="181.1" y="222.0" class="axis x" text-anchor="middle">Jul/25</text><text x="306.2" y="222.0" class="axis x" text-anchor="middle">Sep/25</text><text x="431.3" y="222.0" class="axis x" text-anchor="middle">Nov/25</text><text x="556.4" y="222.0" class="axis x" text-anchor="middle">Jan/26</text><text x="681.5" y="222.0" class="axis x" text-anchor="middle">Mar/26</text><text x="744.0" y="222.0" class="axis x" text-anchor="middle">Apr/26</text></svg>
+      </div>
+    </div>
+
+    <div class="chart-card">
+      <div class="chart-head">
+        <span class="chart-title">Slow Moving Inventory (SMI)</span>
+        <span class="chart-sub">EUR · &gt; 180 days no movement</span>
+      </div>
+      <div class="chart-body">
+        <svg viewBox="0 0 760 240" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Slow Moving Inventory, monthly"><line x1="56" y1="204.0" x2="744" y2="204.0" class="grid"/><text x="48" y="208.0" class="axis y">923k</text><line x1="56" y1="159.0" x2="744" y2="159.0" class="grid"/><text x="48" y="163.0" class="axis y">1,1M</text><line x1="56" y1="114.0" x2="744" y2="114.0" class="grid"/><text x="48" y="118.0" class="axis y">1,3M</text><line x1="56" y1="69.0" x2="744" y2="69.0" class="grid"/><text x="48" y="73.0" class="axis y">1,6M</text><line x1="56" y1="24.0" x2="744" y2="24.0" class="grid"/><text x="48" y="28.0" class="axis y">1,8M</text><path d="M 56.0,204.0 56.0,116.8 L 118.5,136.7 L 181.1,108.2 L 243.6,119.4 L 306.2,106.3 L 368.7,189.0 L 431.3,126.3 L 493.8,148.1 L 556.4,128.1 L 618.9,39.0 L 681.5,49.4 L 744.0,44.6 L 744.0,204.0 Z" fill="rgba(243, 156, 18, 0.14)" stroke="none"/><path d="M 56.0,116.8 L 118.5,136.7 L 181.1,108.2 L 243.6,119.4 L 306.2,106.3 L 368.7,189.0 L 431.3,126.3 L 493.8,148.1 L 556.4,128.1 L 618.9,39.0 L 681.5,49.4 L 744.0,44.6" fill="none" stroke="#F39C12" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/><circle cx="744.0" cy="44.6" r="4" fill="#fff" stroke="#F39C12" stroke-width="2"/><text x="744.0" y="32.6" class="value" text-anchor="middle" fill="#F39C12">1,7M</text><text x="56.0" y="222.0" class="axis x" text-anchor="middle">May/25</text><text x="181.1" y="222.0" class="axis x" text-anchor="middle">Jul/25</text><text x="306.2" y="222.0" class="axis x" text-anchor="middle">Sep/25</text><text x="431.3" y="222.0" class="axis x" text-anchor="middle">Nov/25</text><text x="556.4" y="222.0" class="axis x" text-anchor="middle">Jan/26</text><text x="681.5" y="222.0" class="axis x" text-anchor="middle">Mar/26</text><text x="744.0" y="222.0" class="axis x" text-anchor="middle">Apr/26</text></svg>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="section-header">Definitions</div>
+
+  <div class="panel">
+    <div class="panel-head">How each indicator is calculated</div>
+    <div class="panel-body">
+      <dl>
+        <div class="definition">
+          <dt>Total stock value</dt>
+          <dd>Sum of <code>Vl.Etq.T.D</code> across all materials in the SAP report, on the reference date.</dd>
+        </div>
+        <div class="definition">
+          <dt>No movement &gt; 180 days</dt>
+          <dd>Materials whose <code>NºDias Con</code> (days without consumption) is greater than 180. This is the SAP column used by the company's standard slow-moving calculation.</dd>
+        </div>
+        <div class="definition">
+          <dt>EOM projection</dt>
+          <dd>Same rule applied 0 days ahead, assuming no further issues. Useful as an early warning for next month's provision.</dd>
+        </div>
+        <div class="definition">
+          <dt>Provision loss</dt>
+          <dd>
+            Per-material write-down weighted by aging band, summed across all materials.
+            <div class="bands">
+              <span class="band">181–360d → <b>25%</b></span>
+              <span class="band">361–720d → <b>50%</b></span>
+              <span class="band">&gt; 720d → <b>100%</b></span>
+            </div>
+          </dd>
+        </div>
+        <div class="definition">
+          <dt>Monthly history</dt>
+          <dd>For each month, the latest SAP file of that month is taken as the month-end snapshot. Cached in <code>history_cache.json</code> for incremental updates.</dd>
+        </div>
+      </dl>
+    </div>
+  </div>
+
+  <footer>
+    <span>EP0 · PPC · WC-AUFTR · Source:  20260429183121.AT_MM_000036.txt</span>
+    <span>Internal use only</span>
+  </footer>
+
+</div>
+</div>
+
+<div class="tab-content" data-tab="history">
+  <a class="topbar-back" href="kpi_dashboard.html">← Stock dashboard</a>
+  <div class="topbar-meta">
+    <span>Reference date <span class="pill">29/04/2026</span></span>
+    <span>Updated on 30/04/2026 09:08</span>
+  </div>
+</div>
+
+<div class="page">
+
+  
+<section class="area-block" data-area="turned_parts">
+  <header class="area-head">
+    <span class="area-rule"></span>
+    <h2>Turned Parts</h2>
+    <span class="area-sub">Monthly stock quantity · UN</span>
+  </header>
+  <div class="area-body">
+    <div class="chart-host">
+      <div class="legend-row">
+        <span class="lg lg-stock"></span>Stock
+        <span class="lg lg-reorder"></span>Reorder Point
+        <span class="lg lg-safety"></span>Safety Stock
+        <span class="lg lg-smi"></span>SMI Quantity
+        <span class="lg lg-worst"></span>Worst Case
+        <span class="lg-sep">|</span>
+        <span class="lg lg-proj"></span>Projection
+      </div>
+      <div class="chart-stats" id="stats-turned_parts"></div>
+      <div class="chart-svg" id="chart-turned_parts"></div>
+      <div class="chart-footnote" id="footnote-turned_parts"></div>
+    </div>
+    <div class="selector">
+      <div class="selector-title">Family</div>
+      <ul class="check-list">
+        <li><label class="check-row select-all"><input type="checkbox" class="fam-check" data-area="turned_parts" data-fam="__all__" checked><span>Select all</span></label></li><li><label class="check-row"><input type="checkbox" class="fam-check" data-area="turned_parts" data-fam="Disc" checked><span>Disc</span></label></li><li><label class="check-row"><input type="checkbox" class="fam-check" data-area="turned_parts" data-fam="Output Shaft" checked><span>Output Shaft</span></label></li><li><label class="check-row"><input type="checkbox" class="fam-check" data-area="turned_parts" data-fam="Hollow Shaft" checked><span>Hollow Shaft</span></label></li><li><label class="check-row"><input type="checkbox" class="fam-check" data-area="turned_parts" data-fam="Bushing" checked><span>Bushing</span></label></li><li><label class="check-row"><input type="checkbox" class="fam-check" data-area="turned_parts" data-fam="Others - Drehteile" checked><span>Others - Drehteile</span></label></li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section class="area-block" data-area="geared_parts">
+  <header class="area-head">
+    <span class="area-rule"></span>
+    <h2>Geared Parts</h2>
+    <span class="area-sub">Monthly stock quantity · UN</span>
+  </header>
+  <div class="area-body">
+    <div class="chart-host">
+      <div class="legend-row">
+        <span class="lg lg-stock"></span>Stock
+        <span class="lg lg-reorder"></span>Reorder Point
+        <span class="lg lg-safety"></span>Safety Stock
+        <span class="lg lg-smi"></span>SMI Quantity
+        <span class="lg lg-worst"></span>Worst Case
+        <span class="lg-sep">|</span>
+        <span class="lg lg-proj"></span>Projection
+      </div>
+      <div class="chart-stats" id="stats-geared_parts"></div>
+      <div class="chart-svg" id="chart-geared_parts"></div>
+      <div class="chart-footnote" id="footnote-geared_parts"></div>
+    </div>
+    <div class="selector">
+      <div class="selector-title">Family</div>
+      <ul class="check-list">
+        <li><label class="check-row select-all"><input type="checkbox" class="fam-check" data-area="geared_parts" data-fam="__all__" checked><span>Select all</span></label></li><li><label class="check-row"><input type="checkbox" class="fam-check" data-area="geared_parts" data-fam="Gear Wheel" checked><span>Gear Wheel</span></label></li><li><label class="check-row"><input type="checkbox" class="fam-check" data-area="geared_parts" data-fam="Pinion Shaft" checked><span>Pinion Shaft</span></label></li><li><label class="check-row"><input type="checkbox" class="fam-check" data-area="geared_parts" data-fam="Pinion" checked><span>Pinion</span></label></li><li><label class="check-row"><input type="checkbox" class="fam-check" data-area="geared_parts" data-fam="Worm Wheel" checked><span>Worm Wheel</span></label></li><li><label class="check-row"><input type="checkbox" class="fam-check" data-area="geared_parts" data-fam="Worm Shaft" checked><span>Worm Shaft</span></label></li><li><label class="check-row"><input type="checkbox" class="fam-check" data-area="geared_parts" data-fam="Others - Geared Parts" checked><span>Others - Geared Parts</span></label></li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section class="area-block" data-area="cast_machining">
+  <header class="area-head">
+    <span class="area-rule"></span>
+    <h2>Cast Machining</h2>
+    <span class="area-sub">Monthly stock quantity · UN</span>
+  </header>
+  <div class="area-body">
+    <div class="chart-host">
+      <div class="legend-row">
+        <span class="lg lg-stock"></span>Stock
+        <span class="lg lg-reorder"></span>Reorder Point
+        <span class="lg lg-safety"></span>Safety Stock
+        <span class="lg lg-smi"></span>SMI Quantity
+        <span class="lg lg-worst"></span>Worst Case
+        <span class="lg-sep">|</span>
+        <span class="lg lg-proj"></span>Projection
+      </div>
+      <div class="chart-stats" id="stats-cast_machining"></div>
+      <div class="chart-svg" id="chart-cast_machining"></div>
+      <div class="chart-footnote" id="footnote-cast_machining"></div>
+    </div>
+    <div class="selector">
+      <div class="selector-title">Family</div>
+      <ul class="check-list">
+        <li><label class="check-row select-all"><input type="checkbox" class="fam-check" data-area="cast_machining" data-fam="__all__" checked><span>Select all</span></label></li><li><label class="check-row"><input type="checkbox" class="fam-check" data-area="cast_machining" data-fam="Housing" checked><span>Housing</span></label></li><li><label class="check-row"><input type="checkbox" class="fam-check" data-area="cast_machining" data-fam="Flanges" checked><span>Flanges</span></label></li><li><label class="check-row"><input type="checkbox" class="fam-check" data-area="cast_machining" data-fam="Housing Plate" checked><span>Housing Plate</span></label></li><li><label class="check-row"><input type="checkbox" class="fam-check" data-area="cast_machining" data-fam="Others - Casting" checked><span>Others - Casting</span></label></li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+
+  <div class="sources">ZTMM402 (reorder &amp; safety): <strong> 20260428010118.AT_MM_000009.txt</strong> (1d old) · +1m forecast: <span class="warn">W4: read error — 'Plnt'</span> · +2m forecast: <span class="warn">W10: file is 16 days old (max 5); projection skipped</span></div>
+
+  <footer>
+    <span>EP0 · PPC · WC-AUFTR</span>
+    <span>Internal use only</span>
+  </footer>
+
+</div>
+
+<script id="kpi-data" type="application/json">{"turned_parts": {"months": ["May/25", "Jun/25", "Jul/25", "Aug/25", "Sep/25", "Oct/25", "Nov/25", "Dec/25", "Jan/26", "Feb/26", "Mar/26", "Apr/26"], "families": ["Disc", "Output Shaft", "Hollow Shaft", "Bushing", "Others - Drehteile"], "stock_hist": {"Disc": [21379.0, 20290.0, 18679.0, 17452.0, 8841.0, 12629.0, 17032.0, 17440.0, 18183.0, 17315.0, 19328.0, 19863.0], "Output Shaft": [11821.0, 10675.0, 10328.0, 9752.0, 7676.0, 8468.0, 8883.0, 8833.0, 9917.0, 10715.0, 11119.0, 10866.0], "Hollow Shaft": [10037.0, 8976.0, 9723.0, 8803.0, 5497.0, 5547.0, 6169.0, 6148.0, 7312.0, 8563.0, 9824.0, 10135.0], "Bushing": [1800.0, 1701.0, 1700.0, 1383.0, 1036.0, 1272.0, 1963.0, 2602.0, 4725.0, 5077.0, 4833.0, 5177.0], "Others - Drehteile": [164.0, 263.0, 253.0, 241.0, 198.0, 165.0, 141.0, 225.0, 220.0, 166.0, 234.0, 228.0], "_total_": [45201.0, 41905.0, 40683.0, 37631.0, 23248.0, 28081.0, 34188.0, 35248.0, 40357.0, 41836.0, 45338.0, 46269.0]}, "smi_hist": {"Disc": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], "Output Shaft": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], "Hollow Shaft": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], "Bushing": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], "Others - Drehteile": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], "_total_": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]}, "reorder": {"Disc": 10089.0, "Output Shaft": 4038.0, "Hollow Shaft": 5509.0, "Bushing": 3718.0, "Others - Drehteile": 58.0, "_total_": 23412.0}, "safety": {"Disc": 3712.427, "Output Shaft": 1925.717, "Hollow Shaft": 2294.0589999999997, "Bushing": 1881.8780000000002, "Others - Drehteile": 17.652, "_total_": 9831.733}, "stock_now": {"Disc": 19863.0, "Output Shaft": 10866.0, "Hollow Shaft": 10135.0, "Bushing": 5177.0, "Others - Drehteile": 228.0, "_total_": 46269.0}, "smi_now": {"Disc": 103.0, "Output Shaft": 1270.0, "Hollow Shaft": 430.0, "Bushing": 1.0, "Others - Drehteile": 17.0, "_total_": 1821.0}, "proj1m": {"label": "May/26", "file": "", "age_days": -1, "skipped": true, "reason": "W4: read error \u2014 'Plnt'", "has_worst": false, "stock": {"Disc": 0.0, "Output Shaft": 0.0, "Hollow Shaft": 0.0, "Bushing": 0.0, "Others - Drehteile": 0.0, "_total_": 0.0}, "worst": null}, "proj2m": {"label": "Jun/26", "file": "20260414044011.AT_MM_000037.txt", "age_days": 16, "skipped": true, "reason": "W10: file is 16 days old (max 5); projection skipped", "stock": {"Disc": 0.0, "Output Shaft": 0.0, "Hollow Shaft": 0.0, "Bushing": 0.0, "Others - Drehteile": 0.0, "_total_": 0.0}}}, "geared_parts": {"months": ["May/25", "Jun/25", "Jul/25", "Aug/25", "Sep/25", "Oct/25", "Nov/25", "Dec/25", "Jan/26", "Feb/26", "Mar/26", "Apr/26"], "families": ["Gear Wheel", "Pinion Shaft", "Pinion", "Worm Wheel", "Worm Shaft", "Others - Geared Parts"], "stock_hist": {"Gear Wheel": [50931.0, 48667.0, 49395.0, 51346.0, 48707.0, 45994.0, 42675.0, 37892.0, 27062.0, 32198.0, 31977.0, 34645.0], "Pinion Shaft": [18133.0, 16987.0, 18068.0, 18181.0, 15404.0, 14197.0, 12105.0, 10578.0, 6468.0, 12605.0, 12967.0, 13975.0], "Pinion": [18945.0, 19439.0, 17695.0, 17263.0, 14940.0, 12470.0, 10455.0, 8551.0, 7486.0, 8146.875, 10146.0, 11811.0], "Worm Wheel": [5436.0, 5265.0, 4806.0, 4344.0, 6010.0, 6106.0, 5844.0, 5213.0, 4920.0, 4358.0, 3728.0, 3842.0], "Worm Shaft": [4596.0, 3808.0, 3533.0, 3140.0, 2445.0, 2568.0, 2348.0, 2053.0, 476.0, 2498.0, 2841.0, 2987.0], "Others - Geared Parts": [0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], "_total_": [98041.0, 94166.0, 93498.0, 94274.0, 87506.0, 81335.0, 73427.0, 64287.0, 46412.0, 59805.875, 61659.0, 67260.0]}, "smi_hist": {"Gear Wheel": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], "Pinion Shaft": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], "Pinion": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], "Worm Wheel": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], "Worm Shaft": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], "Others - Geared Parts": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], "_total_": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]}, "reorder": {"Gear Wheel": 23187.0, "Pinion Shaft": 8826.0, "Pinion": 11577.0, "Worm Wheel": 2148.0, "Worm Shaft": 2030.0, "Others - Geared Parts": 0.0, "_total_": 47768.0}, "safety": {"Gear Wheel": 10290.640000000001, "Pinion Shaft": 3717.9419999999996, "Pinion": 4597.105000000001, "Worm Wheel": 830.2700000000001, "Worm Shaft": 721.1989999999998, "Others - Geared Parts": 0.0, "_total_": 20157.156000000003}, "stock_now": {"Gear Wheel": 34645.0, "Pinion Shaft": 13975.0, "Pinion": 11811.0, "Worm Wheel": 3842.0, "Worm Shaft": 2987.0, "Others - Geared Parts": 0.0, "_total_": 67260.0}, "smi_now": {"Gear Wheel": 74.0, "Pinion Shaft": 40.0, "Pinion": 0.0, "Worm Wheel": 0.0, "Worm Shaft": 0.0, "Others - Geared Parts": 0.0, "_total_": 114.0}, "proj1m": {"label": "May/26", "file": "", "age_days": -1, "skipped": true, "reason": "W4: read error \u2014 'Plnt'", "has_worst": false, "stock": {"Gear Wheel": 0.0, "Pinion Shaft": 0.0, "Pinion": 0.0, "Worm Wheel": 0.0, "Worm Shaft": 0.0, "Others - Geared Parts": 0.0, "_total_": 0.0}, "worst": null}, "proj2m": {"label": "Jun/26", "file": "20260414044011.AT_MM_000037.txt", "age_days": 16, "skipped": true, "reason": "W10: file is 16 days old (max 5); projection skipped", "stock": {"Gear Wheel": 0.0, "Pinion Shaft": 0.0, "Pinion": 0.0, "Worm Wheel": 0.0, "Worm Shaft": 0.0, "Others - Geared Parts": 0.0, "_total_": 0.0}}}, "cast_machining": {"months": ["May/25", "Jun/25", "Jul/25", "Aug/25", "Sep/25", "Oct/25", "Nov/25", "Dec/25", "Jan/26", "Feb/26", "Mar/26", "Apr/26"], "families": ["Housing", "Flanges", "Housing Plate", "Others - Casting"], "stock_hist": {"Housing": [19413.0, 18985.0, 17576.0, 17749.0, 19671.0, 19047.0, 21806.0, 22195.0, 24419.0, 30729.0, 30892.0, 32229.0], "Flanges": [6748.0, 5287.0, 4874.0, 4590.0, 3003.0, 2457.0, 3648.0, 3598.0, 4028.0, 4839.0, 5410.0, 5244.0], "Housing Plate": [1347.0, 1185.0, 1213.0, 1156.0, 1179.0, 1136.0, 1123.0, 1188.0, 1113.0, 1423.0, 1507.0, 1590.0], "Others - Casting": [1036.0, 965.0, 840.0, 758.0, 724.0, 771.0, 835.0, 789.0, 750.0, 1032.0, 1087.0, 1068.0], "_total_": [28544.0, 26422.0, 24503.0, 24253.0, 24577.0, 23411.0, 27412.0, 27770.0, 30310.0, 38023.0, 38896.0, 40131.0]}, "smi_hist": {"Housing": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], "Flanges": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], "Housing Plate": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], "Others - Casting": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], "_total_": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]}, "reorder": {"Housing": 14428.0, "Flanges": 3782.0, "Housing Plate": 815.0, "Others - Casting": 442.0, "_total_": 19467.0}, "safety": {"Housing": 4837.675, "Flanges": 1641.1640000000002, "Housing Plate": 371.52199999999993, "Others - Casting": 234.44400000000005, "_total_": 7084.804999999999}, "stock_now": {"Housing": 32229.0, "Flanges": 5244.0, "Housing Plate": 1590.0, "Others - Casting": 1068.0, "_total_": 40131.0}, "smi_now": {"Housing": 337.0, "Flanges": 181.0, "Housing Plate": 77.0, "Others - Casting": 0.0, "_total_": 595.0}, "proj1m": {"label": "May/26", "file": "", "age_days": -1, "skipped": true, "reason": "W4: read error \u2014 'Plnt'", "has_worst": false, "stock": {"Housing": 0.0, "Flanges": 0.0, "Housing Plate": 0.0, "Others - Casting": 0.0, "_total_": 0.0}, "worst": null}, "proj2m": {"label": "Jun/26", "file": "20260414044011.AT_MM_000037.txt", "age_days": 16, "skipped": true, "reason": "W10: file is 16 days old (max 5); projection skipped", "stock": {"Housing": 0.0, "Flanges": 0.0, "Housing Plate": 0.0, "Others - Casting": 0.0, "_total_": 0.0}}}}</script>
+<script>
+(function () {
+  var DATA = JSON.parse(document.getElementById('kpi-data').textContent);
+  var W = 900, H = 280;
+  var PAD_L = 56, PAD_R = 18, PAD_T = 24, PAD_B = 56;
+  var INNER_W = W - PAD_L - PAD_R;
+  var INNER_H = H - PAD_T - PAD_B;
+  var SMI_BAND_H = 22;  // SMI numbers row inside the bottom padding
+
+  var COLOR = {
+    stock:   '#2E8AC9',
+    reorder: '#003E73',
+    safety:  '#27AE60',
+    smi:     '#2C3E50',
+    worst:   '#E74C3C',
+    proj:    '#E58E26',
+  };
+
+  function fmtInt(v) {
+    var n = Math.round(v);
+    return n.toLocaleString('de-DE');  // 1.234 European thousands
+  }
+  function fmtShort(v) {
+    if (Math.abs(v) >= 1e6) return (v/1e6).toFixed(2).replace('.', ',') + 'M';
+    if (Math.abs(v) >= 10000) return (v/1000).toFixed(2).replace('.', ',') + 'k';
+    if (Math.abs(v) >= 1000) return (v/1000).toFixed(2).replace('.', ',') + 'k';
+    return v.toFixed(2).replace('.', ',').toString();
+  }
+
+  function selectedFamilies(area) {
+    var checks = document.querySelectorAll(
+      '.fam-check[data-area="' + area + '"]'
+    );
+    var picked = [];
+    checks.forEach(function (c) {
+      if (c.dataset.fam !== '__all__' && c.checked) picked.push(c.dataset.fam);
+    });
+    return picked;
+  }
+
+  // Sum a per-family map across the selected families.
+  function sumMap(map, fams) {
+    var s = 0;
+    fams.forEach(function (f) { s += (+map[f] || 0); });
+    return s;
+  }
+  function sumArrays(obj, fams) {
+    if (fams.length === 0) return [];
+    var first = obj[fams[0]] || [];
+    var len = first.length;
+    var out = new Array(len).fill(0);
+    fams.forEach(function (f) {
+      var arr = obj[f] || [];
+      for (var i = 0; i < len; i++) out[i] += (+arr[i] || 0);
+    });
+    return out;
+  }
+
+  function renderArea(area) {
+    var d = DATA[area];
+    if (!d) return;
+    var fams = selectedFamilies(area);
+    if (fams.length === 0) {
+      // nothing selected → show empty
+      document.getElementById('chart-' + area).innerHTML =
+        '<div style="padding:40px;text-align:center;color:#8A98A8;font-style:italic">' +
+        'No family selected.</div>';
+      document.getElementById('stats-' + area).innerHTML = '';
+      document.getElementById('footnote-' + area).innerHTML = '';
+      return;
+    }
+
+    // Build the aggregated series
+    var stockHist = sumArrays(d.stock_hist, fams);
+    var reorder   = sumMap(d.reorder, fams);
+    var safety    = sumMap(d.safety, fams);
+    var stockNow  = sumMap(d.stock_now, fams);
+    var smiNow    = sumMap(d.smi_now, fams);
+
+    var months = d.months.slice();
+    var nReal = months.length;
+
+    var p1 = d.proj1m;
+    var p2 = d.proj2m;
+    var stock1 = p1.skipped ? null : sumMap(p1.stock, fams);
+    var stock2 = p2.skipped ? null : sumMap(p2.stock, fams);
+    var worst1 = (p1.skipped || !p1.has_worst || !p1.worst) ? null : sumMap(p1.worst, fams);
+
+    // X scale: enough slots for history + projections
+    var slots = nReal;
+    if (stock1 !== null) slots += 1;
+    if (stock2 !== null) slots += 1;
+
+    // Build labels
+    var allLabels = months.slice();
+    if (stock1 !== null) allLabels.push(p1.label);
+    if (stock2 !== null) allLabels.push(p2.label);
+
+    // Y range: consider all visible series
+    var allValues = stockHist.slice();
+    allValues.push(reorder, safety, stockNow);
+    if (stock1 !== null) allValues.push(stock1);
+    if (stock2 !== null) allValues.push(stock2);
+    if (worst1 !== null) allValues.push(worst1);
+    var vMax = Math.max.apply(null, allValues), vMin = 0;
+    if (!isFinite(vMax) || vMax === 0) vMax = 1;
+    var span = vMax - vMin;
+    var yTop = vMax + span * 0.10;
+    var yBot = 0;
+
+    function xAt(i) {
+      if (slots === 1) return PAD_L + INNER_W / 2;
+      return PAD_L + INNER_W * i / (slots - 1);
+    }
+    function yAt(v) {
+      var avail = INNER_H - SMI_BAND_H;  // reserve bottom band for SMI numbers
+      return PAD_T + avail * (1 - (v - yBot) / (yTop - yBot));
+    }
+
+    // SVG building
+    var s = [];
+    s.push('<svg viewBox="0 0 ' + W + ' ' + H + '" xmlns="http://www.w3.org/2000/svg">');
+
+    // Y gridlines + labels
+    for (var k = 0; k <= 4; k++) {
+      var v = yBot + (yTop - yBot) * k / 4;
+      var y = yAt(v);
+      s.push('<line x1="' + PAD_L + '" y1="' + y.toFixed(1) +
+             '" x2="' + (W - PAD_R) + '" y2="' + y.toFixed(1) + '" class="grid"/>');
+      s.push('<text x="' + (PAD_L - 8) + '" y="' + (y + 4).toFixed(1) +
+             '" class="axis y">' + fmtShort(v) + '</text>');
+    }
+
+    // Vertical separator between history and projection
+    if (slots > nReal) {
+      var sepX = (xAt(nReal - 1) + xAt(nReal)) / 2;
+      s.push('<line x1="' + sepX.toFixed(1) + '" y1="' + PAD_T +
+             '" x2="' + sepX.toFixed(1) + '" y2="' + (PAD_T + INNER_H - SMI_BAND_H) +
+             '" class="proj-sep"/>');
+    }
+
+    // Reorder Point — flat dotted line
+    if (reorder > 0) {
+      var yR = yAt(reorder);
+      s.push('<line x1="' + PAD_L + '" y1="' + yR.toFixed(1) +
+             '" x2="' + (W - PAD_R) + '" y2="' + yR.toFixed(1) +
+             '" stroke="' + COLOR.reorder + '" stroke-width="1.4" ' +
+             'stroke-dasharray="2,3" fill="none"/>');
+      s.push('<text x="' + (PAD_L + 4) + '" y="' + (yR - 4).toFixed(1) +
+             '" class="value" fill="' + COLOR.reorder + '">RP ' + fmtShort(reorder) + '</text>');
+    }
+
+    // Safety Stock — flat dotted line
+    if (safety > 0) {
+      var yS = yAt(safety);
+      s.push('<line x1="' + PAD_L + '" y1="' + yS.toFixed(1) +
+             '" x2="' + (W - PAD_R) + '" y2="' + yS.toFixed(1) +
+             '" stroke="' + COLOR.safety + '" stroke-width="1.4" ' +
+             'stroke-dasharray="2,3" fill="none"/>');
+      s.push('<text x="' + (PAD_L + 4) + '" y="' + (yS - 4).toFixed(1) +
+             '" class="value" fill="' + COLOR.safety + '">SS ' + fmtShort(safety) + '</text>');
+    }
+
+    // Stock real path
+    var pts = stockHist.map(function (v, i) {
+      return [xAt(i), yAt(v)];
+    });
+    if (pts.length) {
+      var lineD = 'M ' + pts.map(function (p) { return p[0].toFixed(1) + ',' + p[1].toFixed(1); }).join(' L ');
+      s.push('<path d="' + lineD + '" fill="none" stroke="' + COLOR.stock +
+             '" stroke-width="2" stroke-linejoin="round"/>');
+    }
+
+    // Stock projection (dashed): connect from last real to +1m and +2m
+    if (stock1 !== null || stock2 !== null) {
+      var path = [];
+      if (pts.length) path.push(pts[pts.length - 1]);
+      var idx = nReal;
+      if (stock1 !== null) { path.push([xAt(idx), yAt(stock1)]); idx++; }
+      if (stock2 !== null) { path.push([xAt(idx), yAt(stock2)]); }
+      if (path.length >= 2) {
+        var d2 = 'M ' + path.map(function (p) { return p[0].toFixed(1) + ',' + p[1].toFixed(1); }).join(' L ');
+        s.push('<path d="' + d2 + '" fill="none" stroke="' + COLOR.proj +
+               '" stroke-width="2" stroke-dasharray="5,4" stroke-linejoin="round"/>');
+      }
+    }
+
+    // Worst Case — single dot at +1m, with dashed connector from last real
+    if (worst1 !== null) {
+      var lastReal = pts[pts.length - 1];
+      var worstPt = [xAt(nReal), yAt(worst1)];
+      s.push('<path d="M ' + lastReal[0].toFixed(1) + ',' + lastReal[1].toFixed(1) +
+             ' L ' + worstPt[0].toFixed(1) + ',' + worstPt[1].toFixed(1) +
+             '" fill="none" stroke="' + COLOR.worst + '" stroke-width="1.4" ' +
+             'stroke-dasharray="3,3"/>');
+      s.push('<circle cx="' + worstPt[0].toFixed(1) + '" cy="' + worstPt[1].toFixed(1) +
+             '" r="4" fill="#fff" stroke="' + COLOR.worst + '" stroke-width="2"/>');
+      s.push('<text x="' + worstPt[0].toFixed(1) + '" y="' + (worstPt[1] + 14).toFixed(1) +
+             '" class="value" fill="' + COLOR.worst + '" text-anchor="middle">' +
+             fmtShort(worst1) + '</text>');
+    }
+
+    // Real points + labels (every other one if many)
+    var skip = pts.length <= 8 ? 1 : 2;
+    pts.forEach(function (p, i) {
+      var isLast = (i === pts.length - 1);
+      if (i % skip === 0 || isLast) {
+        s.push('<circle cx="' + p[0].toFixed(1) + '" cy="' + p[1].toFixed(1) +
+               '" r="3" fill="#fff" stroke="' + COLOR.stock + '" stroke-width="1.5"/>');
+        s.push('<text x="' + p[0].toFixed(1) + '" y="' + (p[1] - 9).toFixed(1) +
+               '" class="value" fill="' + COLOR.stock +
+               '" text-anchor="middle">' + fmtShort(stockHist[i]) + '</text>');
+      }
+    });
+
+    // Projection markers
+    var pIdx = nReal;
+    if (stock1 !== null) {
+      var px = xAt(pIdx), py = yAt(stock1);
+      s.push('<circle cx="' + px.toFixed(1) + '" cy="' + py.toFixed(1) +
+             '" r="4" fill="#fff" stroke="' + COLOR.proj + '" stroke-width="2" stroke-dasharray="2,2"/>');
+      s.push('<text x="' + px.toFixed(1) + '" y="' + (py - 9).toFixed(1) +
+             '" class="value" fill="' + COLOR.proj + '" text-anchor="middle">' +
+             fmtShort(stock1) + '</text>');
+      pIdx++;
+    }
+    if (stock2 !== null) {
+      var px2 = xAt(pIdx), py2 = yAt(stock2);
+      s.push('<circle cx="' + px2.toFixed(1) + '" cy="' + py2.toFixed(1) +
+             '" r="4" fill="#fff" stroke="' + COLOR.proj + '" stroke-width="2" stroke-dasharray="2,2"/>');
+      s.push('<text x="' + px2.toFixed(1) + '" y="' + (py2 - 9).toFixed(1) +
+             '" class="value" fill="' + COLOR.proj + '" text-anchor="middle">' +
+             fmtShort(stock2) + '</text>');
+    }
+
+    // X axis labels
+    var xLabelY = PAD_T + INNER_H - SMI_BAND_H + 18;
+    for (var i = 0; i < slots; i++) {
+      var isProj = i >= nReal;
+      if (i % skip !== 0 && i !== slots - 1 && !isProj) continue;
+      s.push('<text x="' + xAt(i).toFixed(1) + '" y="' + xLabelY +
+             '" class="axis x' + (isProj ? ' proj' : '') + '" text-anchor="middle">' +
+             allLabels[i] + '</text>');
+    }
+
+    // SMI quantity caption (single number on the right, current only)
+    if (smiNow > 0) {
+      var smiX = xAt(slots - 1);
+      var smiY = H - 10;
+      s.push('<text x="' + smiX.toFixed(1) + '" y="' + smiY +
+             '" class="smi-row" text-anchor="middle">SMI ' + fmtInt(smiNow) + '</text>');
+    }
+
+    s.push('</svg>');
+    document.getElementById('chart-' + area).innerHTML = s.join('');
+
+    // Stats above the chart
+    var stats = [];
+    var first = stockHist[0] || 0;
+    var last = stockHist[stockHist.length - 1] || stockNow;
+    var delta = last - first;
+    var deltaPct = first ? (delta / first * 100) : 0;
+    var deltaSign = delta >= 0 ? '+' : '';
+    var deltaCls = delta >= 0 ? '' : 'style="color:#E74C3C"';
+    stats.push('<div class="stat"><span class="stat-label">Latest (' +
+      months[months.length-1] + ')</span><span class="stat-value">' +
+      fmtInt(last) + ' <span class="unit">UN</span></span></div>');
+    if (months.length > 1) {
+      stats.push('<div class="stat"><span class="stat-label">vs ' + months[0] +
+        '</span><span class="stat-value" ' + deltaCls + '>' + deltaSign +
+        fmtInt(delta) + ' (' + deltaSign + deltaPct.toFixed(1) + '%)</span></div>');
+    }
+    if (reorder > 0) {
+      stats.push('<div class="stat"><span class="stat-label">Reorder Point</span>' +
+        '<span class="stat-value" style="color:' + COLOR.reorder + '">' + fmtInt(reorder) +
+        ' <span class="unit">UN</span></span></div>');
+    }
+    if (safety > 0) {
+      stats.push('<div class="stat"><span class="stat-label">Safety Stock</span>' +
+        '<span class="stat-value" style="color:' + COLOR.safety + '">' + fmtInt(safety) +
+        ' <span class="unit">UN</span></span></div>');
+    }
+    if (smiNow > 0) {
+      stats.push('<div class="stat"><span class="stat-label">SMI Quantity</span>' +
+        '<span class="stat-value">' + fmtInt(smiNow) + ' <span class="unit">UN</span></span></div>');
+    }
+    if (stock1 !== null) {
+      stats.push('<div class="stat proj"><span class="stat-label">+1m forecast (' + p1.label +
+        ')</span><span class="stat-value">' + fmtInt(stock1) + ' <span class="unit">UN</span></span></div>');
+    }
+    if (worst1 !== null) {
+      stats.push('<div class="stat worst"><span class="stat-label">Worst Case</span>' +
+        '<span class="stat-value">' + fmtInt(worst1) + ' <span class="unit">UN</span></span></div>');
+    }
+    if (stock2 !== null) {
+      stats.push('<div class="stat proj"><span class="stat-label">+2m forecast (' + p2.label +
+        ')</span><span class="stat-value">' + fmtInt(stock2) + ' <span class="unit">UN</span></span></div>');
+    }
+    document.getElementById('stats-' + area).innerHTML = stats.join('');
+
+    // Footnote — list any skipped projection
+    var notes = [];
+    if (p1.skipped) notes.push('<span class="warn">' + p1.reason + '</span>');
+    if (p2.skipped) notes.push('<span class="warn">' + p2.reason + '</span>');
+    document.getElementById('footnote-' + area).innerHTML = notes.length
+      ? '⚠ ' + notes.join(' · ')
+      : '';
+  }
+
+  // Wire all checkboxes
+  function refreshArea(area) { renderArea(area); }
+
+  document.querySelectorAll('.fam-check').forEach(function (chk) {
+    chk.addEventListener('change', function () {
+      var area = chk.dataset.area;
+      if (chk.dataset.fam === '__all__') {
+        // toggle all family checkboxes in this area
+        var others = document.querySelectorAll(
+          '.fam-check[data-area="' + area + '"]:not([data-fam="__all__"])'
+        );
+        others.forEach(function (o) { o.checked = chk.checked; });
+      } else {
+        // sync the "Select all" checkbox
+        var others = document.querySelectorAll(
+          '.fam-check[data-area="' + area + '"]:not([data-fam="__all__"])'
+        );
+        var allOn = true;
+        others.forEach(function (o) { if (!o.checked) allOn = false; });
+        var sa = document.querySelector(
+          '.fam-check[data-area="' + area + '"][data-fam="__all__"]'
+        );
+        if (sa) sa.checked = allOn;
+      }
+      refreshArea(area);
+    });
+  });
+
+  // Initial render
+  Object.keys(DATA).forEach(function (area) { renderArea(area); });
+})();
+</script>
+</div>
+
+<script>
+(function () {
+  function switchTab(tabName) {
+    // Hide all tabs
+    document.querySelectorAll('.tab-content').forEach(tab => {
+      tab.classList.remove('active');
+    });
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+      btn.classList.remove('active');
+    });
+    
+    // Show selected tab
+    document.querySelector('[data-tab="' + tabName + '"].tab-content').classList.add('active');
+    document.querySelector('[data-tab="' + tabName + '"].tab-btn').classList.add('active');
+  }
+  
+  // Tab button clicks
+  document.querySelectorAll('.tab-btn').forEach(btn => {
+    btn.addEventListener('click', function() {
+      switchTab(this.dataset.tab);
+    });
+  });
+  
+  // Tile clicks
+  document.querySelectorAll('[data-go]').forEach(tile => {
+    tile.addEventListener('click', function() {
+      switchTab(this.dataset.go);
+    });
+  });
+})();
+</script>
+
+</body>
+</html>
