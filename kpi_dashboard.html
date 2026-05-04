@@ -6,6 +6,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <style>
   :root {
     --weg-blue:    #00579E;
@@ -97,7 +98,22 @@
     padding: 24px 28px 48px;
   }
 
-  /* ─── Section header ───────────────────────────────────────── */
+  /* ─── Data info bar ────────────────────────────────────────── */
+  .data-info-bar {
+    background: var(--rule-soft);
+    border: 1px solid var(--rule);
+    border-radius: 6px;
+    padding: 8px 16px;
+    font-size: 12px;
+    color: var(--ink-soft);
+    margin-bottom: 16px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .data-info-bar strong { color: var(--ink); }
+
+  /* ─── Section header ────────────────────────────────────────── */
   .section-header,
   .section-title {
     display: flex;
@@ -537,7 +553,7 @@
   <a href="index.html" class="navbar-link"><span class="navbar-icon">⌂</span> Overview</a> <a href="kpi_dashboard.html" class="navbar-link active"><span class="navbar-icon">▦</span> Stock Dashboard</a> <a href="stock_history.html" class="navbar-link"><span class="navbar-icon">📈</span> Stock History and Projection</a> <a href="material_planning.html" class="navbar-link"><span class="navbar-icon">📋</span> Material Planning</a>
   <div class="navbar-meta">
     <span>Reference: <span class="navbar-pill">04/05/2026</span></span>
-    <span>Updated: 04/05/2026 08:08</span>
+    <span>Updated: 04/05/2026 09:14</span>
   </div>
 </nav>
 
@@ -545,6 +561,10 @@
 
 
 <div class="page">
+
+  <div class="data-info-bar">
+    📅 SAP data from: <strong>04/05/2026</strong> &nbsp;·&nbsp; Generated: 04/05/2026 09:13
+  </div>
 
   <div class="section-header">Key Indicators</div>
 
@@ -666,6 +686,7 @@
           <div class="top-meta">
             <span class="top-meta-label">EUR · no movement > 180d</span>
             <span class="top-meta-value"><strong>50</strong> materials make <strong>40%</strong> of the total (714.858,69 of 1.776.003,14 EUR)</span>
+            <button class="top-export-btn" style="margin-left:auto;border:1px solid #E1E6EB;border-radius:6px;padding:4px 12px;font-size:11px;font-weight:600;color:#5A6878;background:#FFF;cursor:pointer;">⬇ Export</button>
           </div>
           <table class="top-table">
             <thead>
@@ -686,6 +707,7 @@
           <div class="top-meta">
             <span class="top-meta-label">EUR · weighted by age band</span>
             <span class="top-meta-value"><strong>50</strong> materials make <strong>41%</strong> of the total (215.580,94 of 526.073,66 EUR)</span>
+            <button class="top-export-btn" style="margin-left:auto;border:1px solid #E1E6EB;border-radius:6px;padding:4px 12px;font-size:11px;font-weight:600;color:#5A6878;background:#FFF;cursor:pointer;">⬇ Export</button>
           </div>
           <table class="top-table">
             <thead>
@@ -706,6 +728,7 @@
           <div class="top-meta">
             <span class="top-meta-label">EUR · projected end of month</span>
             <span class="top-meta-value"><strong>50</strong> materials make <strong>38%</strong> of the total (255.779,55 of 681.228,13 EUR)</span>
+            <button class="top-export-btn" style="margin-left:auto;border:1px solid #E1E6EB;border-radius:6px;padding:4px 12px;font-size:11px;font-weight:600;color:#5A6878;background:#FFF;cursor:pointer;">⬇ Export</button>
           </div>
           <table class="top-table">
             <thead>
@@ -733,6 +756,27 @@
         btns.forEach(x => x.classList.toggle('active', x.dataset.toptab === k));
         panes.forEach(x => x.classList.toggle('active', x.dataset.toptab === k));
       }));
+
+      // Excel export — exports the visible tab's table
+      document.querySelectorAll('.top-export-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+          const pane = this.closest('.top-pane');
+          const rows = pane.querySelectorAll('tbody tr');
+          const data = [];
+          const headers = Array.from(pane.querySelectorAll('thead th')).map(th => th.textContent.trim());
+          rows.forEach(tr => {
+            const row = {};
+            tr.querySelectorAll('td').forEach((td, i) => { row[headers[i]] = td.textContent.trim(); });
+            data.push(row);
+          });
+          if (!data.length) return;
+          const wb = XLSX.utils.book_new();
+          const ws = XLSX.utils.json_to_sheet(data);
+          XLSX.utils.book_append_sheet(wb, ws, 'Top Materials');
+          const today = new Date().toISOString().slice(0,10);
+          XLSX.writeFile(wb, 'WEG_TopMaterials_' + (pane.dataset.toptab || '') + '_' + today + '.xlsx');
+        });
+      });
     })();
     </script>
     
