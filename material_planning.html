@@ -7,7 +7,6 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <style>
   :root {
     --weg-blue:    #00579E;
@@ -691,7 +690,7 @@
   <a href="index.html" class="navbar-link"><span class="navbar-icon">⌂</span> Overview</a> <a href="kpi_dashboard.html" class="navbar-link"><span class="navbar-icon">▦</span> Stock Dashboard</a> <a href="stock_history.html" class="navbar-link"><span class="navbar-icon">📈</span> Stock History and Projection</a> <a href="material_planning.html" class="navbar-link active"><span class="navbar-icon">📋</span> Material Planning</a>
   <div class="navbar-meta">
     <span>Reference: <span class="navbar-pill">04/05/2026</span></span>
-    <span>Updated: 04/05/2026 09:14</span>
+    <span>Updated: 04/05/2026 09:37</span>
   </div>
 </nav>
 
@@ -703,7 +702,7 @@
   <p class="subtitle">
     Per-material status, suggested actions, and ROP review.
     <span class="data-stamp">
-      📅 Data from SAP: <strong>04/05/2026</strong> &nbsp;·&nbsp; Generated: 04/05/2026 09:13
+      📅 Data from SAP: <strong>04/05/2026</strong> &nbsp;·&nbsp; Generated: 04/05/2026 09:36
       <span class="data-age" id="data-age-badge"></span>
     </span>
   </p>
@@ -755,8 +754,8 @@
           <th class="sortable" data-key="stat_risk_rank" title="Statistical risk: weeks until stockout based on avg consumption vs lead time">Stat. Risk <span class="sort-arrow">▲</span></th>
           <th class="sortable num" data-key="days_cover">Days Cover <span class="sort-arrow">▲</span></th>
           <th class="sortable num" data-key="stock_qty">Stock <span class="sort-arrow">▲</span></th>
-          <th class="sortable num" data-key="balance_45d" title="SAP balance at 45 working days (W4 file)">Curto (45d) <span class="sort-arrow">▲</span></th>
-          <th class="sortable num" data-key="balance_70d" title="SAP balance at 70 working days (W10 file)">Médio (70d) <span class="sort-arrow">▲</span></th>
+          <th class="sortable num" data-key="balance_45d" title="SAP balance at 45 working days (W4 file)">Short-term (45d) <span class="sort-arrow">▲</span></th>
+          <th class="sortable num" data-key="balance_70d" title="SAP balance at 70 working days (W10 file)">Medium-term (70d) <span class="sort-arrow">▲</span></th>
           <th class="sortable num" data-key="rop_sap">ROP (SAP) <span class="sort-arrow">▲</span></th>
           <th class="sortable num" data-key="stock_value_eur">Value EUR <span class="sort-arrow">▲</span></th>
           <th>Suggested Action</th>
@@ -1050,7 +1049,7 @@
     if (r.rop_sap > 0 && r.stock_qty < r.rop_sap)
       context.push('Stock ' + fmtInt(r.stock_qty) + ' < ROP ' + fmtInt(r.rop_sap));
     if (r.balance_45d !== null && r.balance_45d < 0)
-      context.push('Curto prazo (45d) is negative: ' + fmtInt(r.balance_45d));
+      context.push('Short-term (45d) is negative: ' + fmtInt(r.balance_45d));
     if (r.status === 'review' && ropDeltaPct !== null)
       context.push('ROP diverges ' + (ropDeltaPct > 0 ? '+' : '') + ropDeltaPct.toFixed(0) + '% from SAP');
     if (r.status === 'overstock' && r.balance_70d !== null && r.balance_45d !== null && r.balance_70d > r.balance_45d)
@@ -1064,8 +1063,8 @@
     body += '<div class="drawer-key-strip">';
     body += '<div class="drawer-key"><div class="label">Stock now</div><div class="value">' + fmtInt(r.stock_qty) + ' UN</div><div class="extra">' + fmtEur(r.stock_value_eur) + ' EUR</div></div>';
     body += '<div class="drawer-key"><div class="label">Days cover</div><div class="value ' + (r.days_cover < 14 && r.status === 'critical' ? 'urgent' : '') + '">' + fmtDays(r.days_cover) + '</div></div>';
-    body += '<div class="drawer-key"><div class="label">Curto (45d)</div><div class="value ' + (r.balance_45d !== null && r.balance_45d < 0 ? 'urgent' : '') + '">' + fmtInt(r.balance_45d) + '</div></div>';
-    body += '<div class="drawer-key"><div class="label">Médio (70d)</div><div class="value">' + fmtInt(r.balance_70d) + '</div></div>';
+    body += '<div class="drawer-key"><div class="label">Short-term (45d)</div><div class="value ' + (r.balance_45d !== null && r.balance_45d < 0 ? 'urgent' : '') + '">' + fmtInt(r.balance_45d) + '</div></div>';
+    body += '<div class="drawer-key"><div class="label">Medium-term (70d)</div><div class="value">' + fmtInt(r.balance_70d) + '</div></div>';
     body += '</div>';
 
     // ── 2b. Statistical risk box ─────────────────────────────────────
@@ -1087,7 +1086,7 @@
       body += '</div>';
       if (gap !== null && Math.abs(gap) > 5) {
         body += '<div style="font-size:11px;color:var(--muted);margin-top:8px;padding-top:6px;border-top:1px solid rgba(0,0,0,0.06);">';
-        body += 'SAP Curto (45d): <strong>' + fmtInt(sapBal45) + '</strong> &nbsp;·&nbsp; ';
+        body += 'SAP Short-term (45d): <strong>' + fmtInt(sapBal45) + '</strong> &nbsp;·&nbsp; ';
         body += 'Statistical (45d): <strong>' + fmtInt(statBal45) + '</strong>';
         if (gap > 0) body += ' &nbsp;·&nbsp; <span style="color:#1E8449">SAP is more optimistic by +' + fmtInt(gap) + ' UN</span>';
         else body += ' &nbsp;·&nbsp; <span style="color:#C0392B">Unconfirmed demand gap: ' + fmtInt(Math.abs(gap)) + ' UN not yet in SAP</span>';
@@ -1190,10 +1189,10 @@
     }
     points.push({x: 0, val: r.stock_qty, label: 'Now', isNow: true});
     if (r.balance_45d !== null && r.balance_45d !== undefined) {
-      points.push({x: 4, val: r.balance_45d, label: 'Curto (45d)', isForecast: true});
+      points.push({x: 4, val: r.balance_45d, label: 'Short-term (45d)', isForecast: true});
     }
     if (r.balance_70d !== null && r.balance_70d !== undefined) {
-      points.push({x: 10, val: r.balance_70d, label: 'Médio (70d)', isForecast: true});
+      points.push({x: 10, val: r.balance_70d, label: 'Medium-term (70d)', isForecast: true});
     }
     
     const xMin = hasHistory ? -20 : 0;
@@ -1352,54 +1351,71 @@
   renderChips();
   renderTable();
 
-  // ── Excel export ────────────────────────────────────────────────────
+  // ── Excel export (CSV with semicolon separator — opens directly in Excel) ──
   document.getElementById('export-btn').addEventListener('click', function() {
     const rows = getFilteredRows();
     if (!rows.length) { alert('No data to export.'); return; }
     
-    // Build export rows — all fields, human readable
     const STAT_LABEL = {'high':'High','medium':'Medium','low':'Low','na':'—'};
-    const exportData = rows.map(r => ({
-      'Material':              r.material,
-      'Description':           r.description || '',
-      'Area':                  r.area || '',
-      'Family':                r.family || '',
-      'Plant':                 r.plant,
-      'MRP Type':              r.mrp_type,
-      'Status':                STATUS_LABEL[r.status] || r.status,
-      'Stat. Risk':            STAT_LABEL[r.stat_risk] || '—',
-      'Stat. Weeks to Zero':   r.stat_weeks || '',
-      'Stock (UN)':            r.stock_qty,
-      'Stock Value (EUR)':     r.stock_value_eur,
-      'Days Cover':            r.days_cover || '',
-      'Days w/o Consumption':  r.days_no_cons,
-      'Curto Prazo 45d (UN)':  r.balance_45d !== null ? r.balance_45d : '',
-      'Médio Prazo 70d (UN)':  r.balance_70d !== null ? r.balance_70d : '',
-      'ROP SAP (UN)':          r.rop_sap || '',
-      'ROP Suggested (UN)':    r.rop_suggested || '',
-      'Safety Stock (UN)':     r.safety_stock || '',
-      'Avg Weekly Cons (UN)':  r.avg_weekly_cons || '',
-      'Lead Time (weeks)':     r.lead_time_weeks || '',
-      'Supply Type':           r.supply_type || '',
-      'Suggested Action':      r.action || '',
-    }));
+    const STATUS_LABEL_EXP = {'critical':'Critical','pd_risk':'PD Risk','review':'Review','overstock':'Overstock','ok':'OK'};
     
-    const wb = XLSX.utils.book_new();
-    const ws = XLSX.utils.json_to_sheet(exportData);
+    const headers = [
+      'Material','Description','Area','Family','Plant','MRP Type',
+      'Status','Stat. Risk','Stat. Weeks to Zero',
+      'Stock (UN)','Stock Value (EUR)','Days Cover','Days w/o Consumption',
+      'Short-term 45d (UN)','Medium-term 70d (UN)',
+      'ROP SAP (UN)','ROP Suggested (UN)','Safety Stock (UN)',
+      'Avg Weekly Cons (UN/week)','Lead Time (weeks)','Supply Type',
+      'Suggested Action'
+    ];
     
-    // Auto column widths
-    const cols = Object.keys(exportData[0]);
-    ws['!cols'] = cols.map(k => ({
-      wch: Math.max(k.length, ...exportData.slice(0, 50).map(r => String(r[k] || '').length))
-    }));
+    function csvCell(v) {
+      if (v === null || v === undefined) return '';
+      const s = String(v).replace(/"/g, '""');
+      return (s.includes(';') || s.includes('"') || s.includes('\n')) ? '"' + s + '"' : s;
+    }
     
-    XLSX.utils.book_append_sheet(wb, ws, 'Material Planning');
+    // BOM for Excel to detect UTF-8
+    let csv = '\uFEFF' + headers.join(';') + '\r\n';
     
-    // Filename with current filters and date
+    for (const r of rows) {
+      const row = [
+        r.material,
+        r.description || '',
+        r.area || '',
+        r.family || '',
+        r.plant,
+        r.mrp_type,
+        STATUS_LABEL_EXP[r.status] || r.status,
+        STAT_LABEL[r.stat_risk] || '—',
+        r.stat_weeks > 0 ? r.stat_weeks.toFixed(1) : '',
+        r.stock_qty,
+        r.stock_value_eur.toFixed(2).replace('.', ','),
+        r.days_cover > 0 ? Math.round(r.days_cover) : '',
+        r.days_no_cons > 0 ? Math.round(r.days_no_cons) : '',
+        r.balance_45d !== null ? r.balance_45d : '',
+        r.balance_70d !== null ? r.balance_70d : '',
+        r.rop_sap > 0 ? r.rop_sap : '',
+        r.rop_suggested > 0 ? r.rop_suggested : '',
+        r.safety_stock > 0 ? r.safety_stock : '',
+        r.avg_weekly_cons > 0 ? r.avg_weekly_cons.toFixed(1).replace('.', ',') : '',
+        r.lead_time_weeks > 0 ? r.lead_time_weeks.toFixed(1).replace('.', ',') : '',
+        r.supply_type || '',
+        r.action || '',
+      ];
+      csv += row.map(csvCell).join(';') + '\r\n';
+    }
+    
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
     const today = new Date().toISOString().slice(0,10);
-    const areaLabel = currentArea.replace(' ', '_');
+    const areaLabel = currentArea.replace(/ /g, '_');
     const statusLabel = currentStatusFilter || 'all';
-    XLSX.writeFile(wb, `WEG_MaterialPlanning_${areaLabel}_${statusLabel}_${today}.xlsx`);
+    a.href = url;
+    a.download = 'WEG_MaterialPlanning_' + areaLabel + '_' + statusLabel + '_' + today + '.csv';
+    a.click();
+    URL.revokeObjectURL(url);
   });
 })();
 </script>

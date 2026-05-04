@@ -6,7 +6,6 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <style>
   :root {
     --weg-blue:    #00579E;
@@ -553,7 +552,7 @@
   <a href="index.html" class="navbar-link"><span class="navbar-icon">⌂</span> Overview</a> <a href="kpi_dashboard.html" class="navbar-link active"><span class="navbar-icon">▦</span> Stock Dashboard</a> <a href="stock_history.html" class="navbar-link"><span class="navbar-icon">📈</span> Stock History and Projection</a> <a href="material_planning.html" class="navbar-link"><span class="navbar-icon">📋</span> Material Planning</a>
   <div class="navbar-meta">
     <span>Reference: <span class="navbar-pill">04/05/2026</span></span>
-    <span>Updated: 04/05/2026 09:14</span>
+    <span>Updated: 04/05/2026 09:37</span>
   </div>
 </nav>
 
@@ -563,7 +562,7 @@
 <div class="page">
 
   <div class="data-info-bar">
-    📅 SAP data from: <strong>04/05/2026</strong> &nbsp;·&nbsp; Generated: 04/05/2026 09:13
+    📅 SAP data from: <strong>04/05/2026</strong> &nbsp;·&nbsp; Generated: 04/05/2026 09:36
   </div>
 
   <div class="section-header">Key Indicators</div>
@@ -757,24 +756,35 @@
         panes.forEach(x => x.classList.toggle('active', x.dataset.toptab === k));
       }));
 
-      // Excel export — exports the visible tab's table
+      // CSV export — exports the visible tab's table
       document.querySelectorAll('.top-export-btn').forEach(btn => {
         btn.addEventListener('click', function() {
           const pane = this.closest('.top-pane');
-          const rows = pane.querySelectorAll('tbody tr');
-          const data = [];
+          const tabKey = pane.dataset.toptab || 'data';
           const headers = Array.from(pane.querySelectorAll('thead th')).map(th => th.textContent.trim());
-          rows.forEach(tr => {
-            const row = {};
-            tr.querySelectorAll('td').forEach((td, i) => { row[headers[i]] = td.textContent.trim(); });
-            data.push(row);
+          const rowEls = pane.querySelectorAll('tbody tr');
+          
+          let csv = '﻿' + headers.join(';') + '
+
+';
+          rowEls.forEach(tr => {
+            const cells = Array.from(tr.querySelectorAll('td')).map(td => {
+              const s = td.textContent.trim().replace(/"/g, '""');
+              return (s.includes(';') || s.includes('"')) ? '"' + s + '"' : s;
+            });
+            csv += cells.join(';') + '
+
+';
           });
-          if (!data.length) return;
-          const wb = XLSX.utils.book_new();
-          const ws = XLSX.utils.json_to_sheet(data);
-          XLSX.utils.book_append_sheet(wb, ws, 'Top Materials');
+          
+          const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement('a');
           const today = new Date().toISOString().slice(0,10);
-          XLSX.writeFile(wb, 'WEG_TopMaterials_' + (pane.dataset.toptab || '') + '_' + today + '.xlsx');
+          a.href = url;
+          a.download = 'WEG_TopMaterials_' + tabKey + '_' + today + '.csv';
+          a.click();
+          URL.revokeObjectURL(url);
         });
       });
     })();
