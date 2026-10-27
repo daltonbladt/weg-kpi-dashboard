@@ -185,7 +185,7 @@
 
 
 <style>
-  .app-navbar {
+  .unified-navbar {
     background: #FFFFFF;
     border-bottom: 1px solid #E1E6EB;
     box-shadow: 0 1px 2px rgba(44, 62, 80, 0.06);
@@ -196,12 +196,12 @@
     height: 64px;
     font-family: 'Open Sans', sans-serif;
   }
-  .app-navbar .weg-logo { height: 38px; flex-shrink: 0; }
-  .app-navbar .brand-name {
+  .unified-navbar .weg-logo { height: 38px; flex-shrink: 0; }
+  .unified-navbar .brand-name {
     color: #00579E; font-weight: 700; font-size: 18px; letter-spacing: -0.2px;
     margin-right: 24px;
   }
-  .app-navbar .navbar-link {
+  .unified-navbar .navbar-link {
     display: inline-flex;
     align-items: center;
     gap: 6px;
@@ -214,21 +214,21 @@
     border-radius: 6px;
     transition: all 0.12s ease;
   }
-  .app-navbar .navbar-link:hover {
+  .unified-navbar .navbar-link:hover {
     color: #00579E;
     background: #E5EFF7;
   }
-  .app-navbar .navbar-link.active {
+  .unified-navbar .navbar-link.active {
     color: #00579E;
     background: #E5EFF7;
   }
-  .app-navbar .navbar-link.disabled {
+  .unified-navbar .navbar-link.disabled {
     color: #C0C7CF;
     cursor: not-allowed;
     background: transparent !important;
   }
-  .app-navbar .navbar-icon { font-size: 14px; }
-  .app-navbar .navbar-meta {
+  .unified-navbar .navbar-icon { font-size: 14px; }
+  .unified-navbar .navbar-meta {
     margin-left: auto;
     display: flex;
     gap: 16px;
@@ -236,7 +236,7 @@
     font-size: 12px;
     color: #5A6878;
   }
-  .app-navbar .navbar-pill {
+  .unified-navbar .navbar-pill {
     background: #E5EFF7;
     color: #00579E;
     padding: 4px 10px;
@@ -269,14 +269,14 @@
     color: #00579E;
   }
 </style>
-<nav class="app-navbar">
-  <img class="weg-logo" alt="WEG" src="data:image/png;base64,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">
+<nav class="unified-navbar">
+  <img class="weg-logo" alt="WEG" src="data:image/png;base64,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">
   <span class="brand-name">WEG Gear Systems</span>
-  <a href="index_tr.html" class="navbar-link active"><span class="navbar-icon">⌂</span> Overview</a> <a href="kpi_dashboard_tr.html" class="navbar-link"><span class="navbar-icon">▦</span> Stock Dashboard</a> <span class="navbar-link disabled" title="Available for Austria only"><span class="navbar-icon">📈</span> Stock History and Projection</span> <span class="navbar-link disabled" title="Available for Austria only"><span class="navbar-icon">📋</span> Material Planning</span>
+  <a href="index_tr.html" class="navbar-link active"><span class="navbar-icon">⌂</span> Overview</a> <a href="kpi_dashboard_tr.html" class="navbar-link"><span class="navbar-icon">▦</span> Stock Dashboard</a> <span class="navbar-link disabled" title="Available for Austria only"><span class="navbar-icon">📈</span> Stock History and Projection</span> <span class="navbar-link disabled" title="Available for Austria only"><span class="navbar-icon">📋</span> Material Planning</span> <a href="production.html" class="navbar-link"><span class="navbar-icon">🏭</span> Global Production</a>
   <div class="navbar-meta">
     <div class="country-switch" title="Switch to Austria">  <span class="country-current">🇹🇷 Turkey</span>  <a href="index.html" class="country-other">→ 🇦🇹 Austria</a></div>
-    <span>Reference: <span class="navbar-pill">22/10/2026</span></span>
-    <span>Updated: 22/10/2026 11:49</span>
+    <span>Reference: <span class="navbar-pill">27/10/2026</span></span>
+    <span>Updated: 27/10/2026 13:03</span>
   </div>
 </nav>
 
@@ -323,6 +323,17 @@
     </a>
     
     
+    
+    <a href="production.html" class="tile">
+      <div class="tile-icon">🏭</div>
+      <div>
+        <h3>Global Production Control</h3>
+        <p>Production volume and On-Time Delivery across all plants
+           (ECC + SAP B1): yearly history, current year by month, and
+           filters by macro-area, plant and MRP controller.</p>
+        <div class="tile-meta">ECC + SAP B1 · global · OTD%</div>
+      </div>
+    </a>
   </div>
 
   <div class="footer-meta">
